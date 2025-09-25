@@ -1,0 +1,26 @@
+id,name,type,location,status,manufacturer,model,serial_number,purchase_date,warranty_expiry,next_maintenance,last_maintenance,maintenance_cost,energy_rating,safety_certification,training_required,max_capacity,current_load,efficiency
+1,Inspection Camera #01,Inspection Camera,Training Room 1,Idle,Universal Robots,MODEL-8554,SN135025,2023-11-25,2028-06-02,2025-10-01,2025-08-29,1646.45,B,OHSAS 18001,Basic,606,34,78.93
+2,Conveyor Belt #02,Conveyor Belt,Training Room 1,Warning,ABB,MODEL-5175,SN159466,2025-06-16,2025-06-04,2025-12-22,2025-09-08,4494.83,D,CE,Basic,894,51,88.51
+3,Milling Machine #03,Milling Machine,Maintenance Bay,Active,ABB,MODEL-1345,SN242213,2022-10-13,2026-01-17,2025-12-10,2025-09-13,914.39,C,CE,Intermediate,553,43,93.58
+4,Assembly Line #04,Assembly Line,Training Room 2,Active,Fanuc,MODEL-7421,SN242618,2023-03-20,2028-01-01,2025-11-15,2025-08-28,961.22,A,CE,Advanced,264,90,91.86
+5,Grinder #05,Grinder,Manufacturing Lab A,Active,Siemens,MODEL-3177,SN575403,2025-05-26,2026-07-15,2025-12-14,2025-09-05,3470.65,C,OHSAS 18001,Basic,989,26,75.51
+6,Milling Machine #06,Milling Machine,Assembly Floor,Active,ABB,MODEL-9844,SN387871,2025-01-31,2028-09-06,2025-12-09,2025-08-30,1948.64,D,CE,Basic,583,22,84.02
+7,3D Printer #07,3D Printer,Training Room 2,Active,ABB,MODEL-5151,SN901149,2025-03-10,2027-09-30,2025-10-16,2025-09-06,781.3,C,ISO 14001,Basic,442,19,73.0
+8,Assembly Line #08,Assembly Line,Prototype Lab,Active,Fanuc,MODEL-3934,SN659705,2023-05-30,2027-06-07,2025-10-08,2025-09-11,2836.75,D,ISO 9001,Advanced,471,99,89.02
+9,Press Machine #09,Press Machine,Packaging Area,Idle,Festo,MODEL-1956,SN577854,2022-10-21,2025-11-15,2025-11-09,2025-09-08,902.27,B,CE,Intermediate,693,15,81.36
+10,Milling Machine #10,Milling Machine,Training Room 2,Maintenance,Siemens,MODEL-5214,SN472222,2023-04-17,2025-01-21,2025-11-10,2025-09-14,3404.46,C,OHSAS 18001,Basic,164,100,90.09
+11,3D Printer #11,3D Printer,Manufacturing Lab A,Active,Siemens,MODEL-8978,SN685450,2024-06-12,2027-07-08,2025-11-03,2025-09-23,2299.83,D,OHSAS 18001,Advanced,837,55,92.39
+12,Grinder #12,Grinder,Packaging Area,Active,Universal Robots,MODEL-4817,SN741767,2025-07-28,2026-02-12,2025-12-01,2025-08-28,1180.84,C,OHSAS 18001,Intermediate,683,93,94.37
+13,Quality Station #13,Quality Station,Research Lab,Warning,Siemens,MODEL-9533,SN745049,2025-01-24,2025-07-26,2025-11-05,2025-09-16,2260.84,C,CE,Basic,123,41,73.68
+14,Welding Station #14,Welding Station,Training Room 1,Idle,ABB,MODEL-4812,SN325401,2025-05-16,2026-08-15,2025-10-29,2025-09-07,735.58,C,ISO 14001,Intermediate,580,39,82.31
+15,Assembly Line #15,Assembly Line,Quality Control Area,Warning,KUKA,MODEL-6693,SN198553,2025-08-21,2026-09-30,2025-11-05,2025-09-10,2918.62,D,ISO 14001,Basic,79,17,74.84
+16,Drill Press #16,Drill Press,Training Room 1,Critical,ABB,MODEL-9872,SN705082,2023-08-26,2027-10-26,2025-11-06,2025-09-02,1903.94,C,ISO 14001,Advanced,817,27,85.91
+17,Quality Station #17,Quality Station,Prototype Lab,Active,ABB,MODEL-9169,SN926023,2024-11-14,2027-05-25,2025-12-01,2025-09-09,4886.42,D,ISO 14001,Basic,533,54,82.22
+18,Laser Cutter #18,Laser Cutter,Research Lab,Active,Siemens,MODEL-6403,SN595081,2023-05-28,2028-05-26,2025-12-22,2025-08-28,4084.81,B,CE,Advanced,835,5,86.37
+19,Press Machine #19,Press Machine,Packaging Area,Active,ABB,MODEL-8077,SN665542,2024-09-08,2026-02-22,2025-12-03,2025-09-13,1834.82,A,CE,Advanced,82,56,75.94
+20,Drill Press #20,Drill Press,Training Room 2,Active,ABB,MODEL-1349,SN414272,2023-07-16,2026-11-30,2025-12-25,2025-08-29,1753.48,A,CE,Basic,722,10,77.78
+21,3D Printer #21,3D Printer,Manufacturing Lab B,Active,ABB,MODEL-1152,SN290847,2025-01-28,2025-05-08,2025-11-24,2025-09-19,4611.51,B,ISO 9001,Advanced,395,89,94.95
+22,3D Printer #22,3D Printer,Prototype Lab,Active,Festo,MODEL-5525,SN115408,2023-09-28,2024-09-30,2025-12-20,2025-08-27,2201.12,C,OHSAS 18001,Intermediate,912,17,94.15
+23,CNC Machine #23,CNC Machine,Assembly Floor,Warning,Fanuc,MODEL-8899,SN268342,2025-05-14,2025-03-31,2025-10-16,2025-09-23,3894.44,C,ISO 14001,Advanced,56,90,82.02
+24,Robotic Arm #24,Robotic Arm,Packaging Area,Active,KUKA,MODEL-6048,SN859419,2023-10-13,2025-04-19,2025-11-14,2025-09-19,4242.19,C,ISO 14001,Advanced,254,69,74.17
+25,Inspection Camera #25,Inspection Camera,Manufacturing Lab B,Active,Universal Robots,MODEL-6698,SN656422,2023-07-25,2025-06-11,2025-11-15,2025-09-20,616.24,B,ISO 14001,Advanced,511,42,88.44

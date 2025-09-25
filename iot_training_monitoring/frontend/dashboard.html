@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - IoT Training Monitoring</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">IoT Training Monitor</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="equipment.html">Equipment</a></li>
+                <li><a href="maintenance.html">Maintenance</a></li>
+                <li><a href="analytics.html">Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="dashboard">
+            <h1>Equipment Monitoring Dashboard</h1>
+            
+            <div class="dashboard-grid">
+                <div class="metric-card">
+                    <h3>Equipment Status Overview</h3>
+                    <div class="chart-container" id="statusChart">
+                        <p>Loading chart...</p>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Real-time Alerts</h3>
+                    <div id="alertsList">
+                        <p>Loading alerts...</p>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Usage Statistics</h3>
+                    <div class="chart-container" id="usageChart">
+                        <p>Loading usage data...</p>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Maintenance Schedule</h3>
+                    <div id="maintenanceSchedule">
+                        <p>Loading schedule...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metric-card" style="grid-column: 1 / -1; margin-top: 2rem;">
+                <h3>Recent Equipment Activity</h3>
+                <div id="recentActivity">
+                    <p>Loading activity...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 IoT Training Equipment Monitoring System. All rights reserved.</p>
+    </footer>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

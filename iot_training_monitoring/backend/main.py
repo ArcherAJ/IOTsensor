@@ -1,0 +1,587 @@
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+import json
+import asyncio
+from datetime import datetime
+from typing import List, Dict, Any
+from functools import lru_cache
+import time
+from models import *
+from database import db
+from data_processor import DataProcessor
+from ml_predictor import MLPredictor
+from ai_insights import ai_insights_engine
+from gamification import gamification_engine
+from ai_chatbot import ai_chatbot, notification_engine
+from virtual_lab import virtual_lab_engine
+
+app = FastAPI(title="IoT Training Equipment Monitoring API")
+
+# Add performance middleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Performance cache
+performance_cache = {}
+cache_ttl = 30  # 30 seconds TTL
+
+# Initialize components
+data_processor = DataProcessor()
+ml_predictor = MLPredictor()
+
+# WebSocket connection manager
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
+
+manager = ConnectionManager()
+
+# Performance optimization functions
+def get_cached_data(key: str):
+    """Get data from cache if not expired"""
+    if key in performance_cache:
+        data, timestamp = performance_cache[key]
+        if time.time() - timestamp < cache_ttl:
+            return data
+        else:
+            del performance_cache[key]
+    return None
+
+def set_cached_data(key: str, data: Any):
+    """Set data in cache with timestamp"""
+    performance_cache[key] = (data, time.time())
+
+@lru_cache(maxsize=100)
+def get_equipment_data_cached():
+    """Cached equipment data retrieval"""
+    return db.get_equipment()
+
+@lru_cache(maxsize=100)
+def get_sensor_data_cached():
+    """Cached sensor data retrieval"""
+    return db.get_sensor_data()
+
+# API Routes (must be defined before catch-all route)
+@app.get("/api/overview")
+async def get_overview():
+    """Get overview statistics with caching"""
+    cache_key = "overview_stats"
+    cached_data = get_cached_data(cache_key)
+    
+    if cached_data:
+        return cached_data
+    
+    stats = data_processor.get_overview_stats()
+    set_cached_data(cache_key, stats)
+    return stats
+
+@app.get("/api/alerts")
+async def get_alerts():
+    return data_processor.get_alerts()
+
+@app.get("/api/equipment")
+async def get_equipment():
+    equipment_df = db.get_equipment()
+    return equipment_df.to_dict(orient='records')
+
+@app.get("/api/equipment/{equipment_id}")
+async def get_equipment_details(equipment_id: int):
+    equipment_df = db.get_equipment()
+    equipment = equipment_df[equipment_df['id'] == equipment_id]
+    
+    if equipment.empty:
+        raise HTTPException(status_code=404, detail="Equipment not found")
+    
+    sensor_df = db.get_sensor_data()
+    equipment_sensor_data = sensor_df[sensor_df['equipment_id'] == equipment_id]
+    
+    maintenance_df = db.get_maintenance_logs()
+    equipment_maintenance = maintenance_df[maintenance_df['equipment_id'] == equipment_id]
+    
+    return {
+        "equipment": equipment.iloc[0].to_dict(),
+        "sensor_data": equipment_sensor_data.to_dict(orient='records'),
+        "maintenance_history": equipment_maintenance.to_dict(orient='records')
+    }
+
+@app.get("/api/usage-stats")
+async def get_usage_stats():
+    return data_processor.get_usage_stats()
+
+@app.get("/api/maintenance-schedule")
+async def get_maintenance_schedule():
+    return data_processor.get_maintenance_schedule()
+
+@app.get("/api/recent-activity")
+async def get_recent_activity():
+    return data_processor.get_recent_activity()
+
+@app.get("/api/predict-maintenance/{equipment_id}")
+async def predict_maintenance(equipment_id: int):
+    return ml_predictor.predict_maintenance(equipment_id)
+
+@app.get("/api/predict-failure/{equipment_id}")
+async def predict_failure(equipment_id: int, days_ahead: int = 30):
+    return ml_predictor.predict_equipment_failure(equipment_id, days_ahead)
+
+@app.get("/api/anomaly-detection")
+async def detect_anomalies(equipment_id: int = None):
+    return ml_predictor.detect_anomalies(equipment_id)
+
+@app.get("/api/equipment-health/{equipment_id}")
+async def get_equipment_health(equipment_id: int):
+    return ml_predictor.get_equipment_health_score(equipment_id)
+
+@app.get("/api/safety-alerts")
+async def get_safety_alerts():
+    return data_processor.get_safety_alerts()
+
+@app.get("/api/compliance-report")
+async def get_compliance_report():
+    return data_processor.get_compliance_report()
+
+@app.get("/api/energy-analytics")
+async def get_energy_analytics():
+    return data_processor.get_energy_analytics()
+
+@app.get("/api/equipment/{equipment_id}/predictive-maintenance")
+async def get_predictive_maintenance(equipment_id: int):
+    return ml_predictor.predict_maintenance(equipment_id)
+
+@app.post("/api/sensor-data")
+async def add_sensor_data(sensor_data: SensorData):
+    db.add_sensor_data(sensor_data)
+    return {"message": "Sensor data added successfully"}
+
+@app.post("/api/maintenance-log")
+async def add_maintenance_log(maintenance_log: MaintenanceLog):
+    db.add_maintenance_log(maintenance_log)
+    return {"message": "Maintenance log added successfully"}
+
+@app.get("/api/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": "2024-03-20T08:00:00Z"}
+
+# ===== NEW ENHANCED FEATURES =====
+
+# AI Insights and Analytics
+@app.get("/api/ai-insights")
+async def get_ai_insights():
+    """Get AI-generated insights and recommendations"""
+    sensor_data = db.get_sensor_data()
+    equipment_data = db.get_equipment()
+    
+    # Convert to model objects
+    sensor_objects = [SensorData(**row.to_dict()) for _, row in sensor_data.iterrows()]
+    equipment_objects = [Equipment(**row.to_dict()) for _, row in equipment_data.iterrows()]
+    
+    insights = await ai_insights_engine.generate_insights(sensor_objects, equipment_objects)
+    return [insight.dict() for insight in insights]
+
+@app.get("/api/ai-insights/{insight_id}/visualization")
+async def get_insight_visualization(insight_id: int):
+    """Get visualization data for specific insight"""
+    # In a real implementation, you would fetch the insight from database
+    # For demo purposes, return sample visualization data
+    return {
+        "insight_id": insight_id,
+        "chart_type": "line",
+        "data": [
+            {"timestamp": "2024-03-20T08:00:00Z", "value": 85.2},
+            {"timestamp": "2024-03-20T09:00:00Z", "value": 87.1},
+            {"timestamp": "2024-03-20T10:00:00Z", "value": 89.3}
+        ],
+        "title": "Equipment Efficiency Trend",
+        "x_axis": "Time",
+        "y_axis": "Efficiency (%)"
+    }
+
+# Gamification System
+@app.get("/api/gamification/leaderboard")
+async def get_leaderboard():
+    """Get gamification leaderboard"""
+    # In a real implementation, you would fetch users from database
+    sample_users = [
+        User(id=1, username="john_doe", email="john@example.com", role=UserRole.TRAINER,
+             first_name="John", last_name="Doe", created_at=datetime.now().isoformat(),
+             badge_points=1250, achievements=["Safety First", "Efficiency Expert"]),
+        User(id=2, username="jane_smith", email="jane@example.com", role=UserRole.LAB_MANAGER,
+             first_name="Jane", last_name="Smith", created_at=datetime.now().isoformat(),
+             badge_points=2100, achievements=["Maintenance Hero", "Innovation Leader"]),
+        User(id=3, username="bob_wilson", email="bob@example.com", role=UserRole.STUDENT,
+             first_name="Bob", last_name="Wilson", created_at=datetime.now().isoformat(),
+             badge_points=850, achievements=["Safety First"])
+    ]
+    
+    leaderboard = gamification_engine.generate_leaderboard(sample_users)
+    return leaderboard
+
+@app.get("/api/gamification/badges")
+async def get_badges():
+    """Get all available badges"""
+    return [badge.dict() for badge in gamification_engine.badges]
+
+@app.get("/api/gamification/user/{user_id}/stats")
+async def get_user_gamification_stats(user_id: int):
+    """Get user's gamification statistics"""
+    # In a real implementation, you would fetch user from database
+    sample_user = User(id=user_id, username="user", email="user@example.com", 
+                      role=UserRole.TRAINER, first_name="User", last_name="Name",
+                      created_at=datetime.now().isoformat(), badge_points=1000)
+    
+    stats = GamificationStats(
+        user_id=user_id,
+        total_points=sample_user.badge_points or 0,
+        level=gamification_engine.calculate_level(sample_user.badge_points or 0),
+        badges_earned=len(sample_user.achievements or []),
+        streak_days=gamification_engine.calculate_streak_days(sample_user),
+        safe_usage_hours=150.5,
+        efficiency_score=0.87,
+        maintenance_contributions=5,
+        safety_reports=3,
+        training_completions=12
+    )
+    return stats.dict()
+
+@app.get("/api/gamification/challenges/{user_role}")
+async def get_role_challenges(user_role: UserRole):
+    """Get role-specific challenges"""
+    challenges = gamification_engine.get_role_specific_challenges(user_role)
+    return challenges
+
+# AI Chatbot
+@app.post("/api/chatbot/message")
+async def send_chat_message(message: str, user_id: int, equipment_id: int = None):
+    """Send message to AI chatbot"""
+    ai_response = await ai_chatbot.process_message(message, user_id, equipment_id)
+    return ai_response.dict()
+
+@app.get("/api/chatbot/history/{user_id}")
+async def get_chat_history(user_id: int):
+    """Get user's chat history"""
+    # In a real implementation, you would fetch from database
+    return [
+        {
+            "id": 1,
+            "user_id": user_id,
+            "message": "Hello, I need help with equipment troubleshooting",
+            "timestamp": datetime.now().isoformat(),
+            "is_ai_response": False
+        },
+        {
+            "id": 2,
+            "user_id": user_id,
+            "message": "I can help you with equipment troubleshooting. What specific issue are you experiencing?",
+            "timestamp": datetime.now().isoformat(),
+            "is_ai_response": True
+        }
+    ]
+
+# Virtual Lab Environment
+@app.get("/api/virtual-lab/environments")
+async def get_virtual_environments():
+    """Get all virtual lab environments"""
+    return [env.dict() for env in virtual_lab_engine.environments]
+
+@app.get("/api/virtual-lab/environment/{environment_id}")
+async def get_virtual_environment(environment_id: int):
+    """Get specific virtual lab environment"""
+    environment = virtual_lab_engine.get_environment_by_id(environment_id)
+    if not environment:
+        raise HTTPException(status_code=404, detail="Environment not found")
+    return environment.dict()
+
+@app.get("/api/virtual-lab/environment/{environment_id}/scenario/{scenario_type}")
+async def create_interactive_scenario(environment_id: int, scenario_type: str):
+    """Create interactive learning scenario"""
+    scenario = virtual_lab_engine.create_interactive_scenario(environment_id, scenario_type)
+    return scenario
+
+@app.post("/api/virtual-lab/equipment/{equipment_id}/interact")
+async def interact_with_equipment(equipment_id: int, interaction_type: str, user_input: Dict[str, Any]):
+    """Interact with virtual equipment"""
+    result = virtual_lab_engine.simulate_equipment_interaction(equipment_id, interaction_type, user_input)
+    return result
+
+@app.get("/api/virtual-lab/environment/{environment_id}/statistics")
+async def get_environment_statistics(environment_id: int):
+    """Get virtual environment statistics"""
+    stats = virtual_lab_engine.get_environment_statistics(environment_id)
+    return stats
+
+# Notifications
+@app.get("/api/notifications/{user_id}")
+async def get_user_notifications(user_id: int):
+    """Get user notifications"""
+    # In a real implementation, you would fetch from database
+    notifications = [
+        {
+            "id": 1,
+            "user_id": user_id,
+            "title": "Equipment Alert: CNC Machine",
+            "message": "High temperature detected on CNC Machine #1",
+            "type": "equipment",
+            "priority": "high",
+            "timestamp": datetime.now().isoformat(),
+            "read": False,
+            "equipment_id": 1
+        },
+        {
+            "id": 2,
+            "user_id": user_id,
+            "title": "Achievement Unlocked! 🏆",
+            "message": "Congratulations! You've earned the 'Safety First' badge.",
+            "type": "gamification",
+            "priority": "low",
+            "timestamp": datetime.now().isoformat(),
+            "read": False
+        }
+    ]
+    return notifications
+
+@app.post("/api/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: int):
+    """Mark notification as read"""
+    return {"message": "Notification marked as read", "notification_id": notification_id}
+
+# Role-based User Management
+@app.get("/api/users")
+async def get_users():
+    """Get all users"""
+    # In a real implementation, you would fetch from database
+    users = [
+        User(id=1, username="trainer1", email="trainer1@example.com", role=UserRole.TRAINER,
+             first_name="John", last_name="Doe", created_at=datetime.now().isoformat()),
+        User(id=2, username="manager1", email="manager1@example.com", role=UserRole.LAB_MANAGER,
+             first_name="Jane", last_name="Smith", created_at=datetime.now().isoformat()),
+        User(id=3, username="policy1", email="policy1@example.com", role=UserRole.POLICYMAKER,
+             first_name="Bob", last_name="Wilson", created_at=datetime.now().isoformat()),
+        User(id=4, username="student1", email="student1@example.com", role=UserRole.STUDENT,
+             first_name="Alice", last_name="Johnson", created_at=datetime.now().isoformat())
+    ]
+    return [user.dict() for user in users]
+
+@app.get("/api/users/{user_id}")
+async def get_user(user_id: int):
+    """Get specific user"""
+    # In a real implementation, you would fetch from database
+    user = User(id=user_id, username="user", email="user@example.com", role=UserRole.TRAINER,
+               first_name="User", last_name="Name", created_at=datetime.now().isoformat())
+    return user.dict()
+
+@app.get("/api/users/role/{role}/dashboard")
+async def get_role_dashboard(role: UserRole):
+    """Get role-specific dashboard data"""
+    dashboards = {
+        UserRole.TRAINER: {
+            "title": "Trainer Dashboard",
+            "widgets": ["training_sessions", "student_progress", "equipment_status", "safety_alerts"],
+            "quick_actions": ["start_training", "report_issue", "check_schedule"]
+        },
+        UserRole.LAB_MANAGER: {
+            "title": "Lab Manager Dashboard",
+            "widgets": ["equipment_overview", "maintenance_schedule", "usage_analytics", "compliance_status"],
+            "quick_actions": ["schedule_maintenance", "view_reports", "manage_users"]
+        },
+        UserRole.POLICYMAKER: {
+            "title": "Policy Maker Dashboard",
+            "widgets": ["compliance_overview", "safety_metrics", "cost_analysis", "trend_reports"],
+            "quick_actions": ["view_compliance", "generate_report", "set_policies"]
+        },
+        UserRole.STUDENT: {
+            "title": "Student Dashboard",
+            "widgets": ["learning_progress", "available_equipment", "achievements", "training_schedule"],
+            "quick_actions": ["book_equipment", "start_learning", "view_progress"]
+        }
+    }
+    return dashboards.get(role, {})
+
+# Community Feedback
+@app.get("/api/community/feedback")
+async def get_community_feedback():
+    """Get community feedback"""
+    # In a real implementation, you would fetch from database
+    feedback = [
+        {
+            "id": 1,
+            "user_id": 1,
+            "category": "feature_request",
+            "title": "Add mobile app support",
+            "description": "It would be great to have a mobile app for easier access",
+            "priority": "medium",
+            "status": "open",
+            "created_at": datetime.now().isoformat(),
+            "votes": 15,
+            "tags": ["mobile", "accessibility"]
+        },
+        {
+            "id": 2,
+            "user_id": 2,
+            "category": "bug_report",
+            "title": "Dashboard loading issue",
+            "description": "Dashboard sometimes takes too long to load",
+            "priority": "high",
+            "status": "in_progress",
+            "created_at": datetime.now().isoformat(),
+            "votes": 8,
+            "tags": ["dashboard", "performance"]
+        }
+    ]
+    return feedback
+
+@app.post("/api/community/feedback")
+async def submit_feedback(feedback: CommunityFeedback):
+    """Submit community feedback"""
+    return {"message": "Feedback submitted successfully", "feedback_id": feedback.id}
+
+# Technology Stack
+@app.get("/api/technology/stack")
+async def get_technology_stack():
+    """Get technology stack information"""
+    tech_stack = [
+        {
+            "category": "Backend",
+            "name": "FastAPI",
+            "description": "Modern, fast web framework for building APIs",
+            "version": "0.104.1",
+            "purpose": "API development",
+            "integration_status": "active"
+        },
+        {
+            "category": "Machine Learning",
+            "name": "scikit-learn",
+            "description": "Machine learning library for Python",
+            "version": "1.3.2",
+            "purpose": "Predictive analytics",
+            "integration_status": "active"
+        },
+        {
+            "category": "Frontend",
+            "name": "Three.js",
+            "description": "3D graphics library for web",
+            "version": "r158",
+            "purpose": "3D virtual lab",
+            "integration_status": "active"
+        },
+        {
+            "category": "Database",
+            "name": "PostgreSQL",
+            "description": "Advanced open source relational database",
+            "version": "15.0",
+            "purpose": "Data storage",
+            "integration_status": "active"
+        }
+    ]
+    return tech_stack
+
+# Scalability Demos
+@app.get("/api/scalability/demos")
+async def get_scalability_demos():
+    """Get scalability demonstration data"""
+    demos = [
+        {
+            "id": 1,
+            "name": "Multi-Campus Implementation",
+            "description": "Successfully deployed across 5 campuses with 200+ equipment units",
+            "lab_type": "Manufacturing",
+            "equipment_count": 200,
+            "user_count": 500,
+            "data_points_per_day": 50000,
+            "performance_metrics": {
+                "response_time": "150ms",
+                "uptime": "99.9%",
+                "throughput": "1000 req/sec"
+            },
+            "cost_analysis": {
+                "monthly_cost": 5000,
+                "cost_per_user": 10,
+                "roi_percentage": 250
+            },
+            "implementation_timeline": "6 months",
+            "success_factors": ["Cloud infrastructure", "Modular design", "Training program"],
+            "challenges_overcome": ["Network latency", "Data synchronization", "User adoption"],
+            "lessons_learned": ["Start small", "Focus on training", "Monitor performance"]
+        }
+    ]
+    return demos
+
+# WebSocket for real-time updates
+@app.post("/api/performance")
+async def log_performance(performance_data: dict):
+    """Log performance metrics from frontend"""
+    try:
+        print(f"Performance data received: {performance_data}")
+        return {"status": "success", "message": "Performance data logged"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Send real-time updates every 5 seconds
+            await asyncio.sleep(5)
+            data = {
+                "type": "real_time_update",
+                "timestamp": datetime.now().isoformat(),
+                "equipment_status": "active",
+                "alerts": 0,
+                "active_users": len(manager.active_connections)
+            }
+            await manager.send_personal_message(json.dumps(data), websocket)
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+
+# Serve frontend files (must be after API routes)
+@app.get("/")
+async def serve_frontend():
+    # Get the parent directory (project root) and then frontend
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(current_dir)
+    frontend_path = os.path.join(project_root, "frontend", "index.html")
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path)
+    raise HTTPException(status_code=404, detail=f"Frontend not found at {frontend_path}")
+
+@app.get("/{path:path}")
+async def serve_static_files(path: str):
+    # Don't serve static files for API routes
+    if path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+    
+    # Get the parent directory (project root) and then frontend
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(current_dir)
+    frontend_path = os.path.join(project_root, "frontend", path)
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path)
+    raise HTTPException(status_code=404, detail=f"File not found: {path}")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

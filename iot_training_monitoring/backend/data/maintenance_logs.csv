@@ -1,0 +1,51 @@
+id,equipment_id,maintenance_date,maintenance_type,description,technician,duration_hours,cost,parts_replaced,status,next_maintenance_due,notes
+1,2,2025-07-26,Corrective Maintenance,Maintenance performed on Conveyor Belt #02,David Davis,2.17,409.95,Filter,In Progress,2025-10-07,Maintenance completed successfully. Equipment functioning normally.
+2,22,2025-09-22,Preventive Maintenance,Maintenance performed on 3D Printer #22,Mike Wilson,2.97,1417.81,Multiple parts,Scheduled,2025-11-21,Maintenance completed successfully. Equipment functioning normally.
+3,9,2025-07-09,Preventive Maintenance,Maintenance performed on Press Machine #09,Lisa Brown,6.52,324.55,Filter,Completed,2025-09-28,Maintenance completed successfully. Equipment functioning normally.
+4,12,2025-06-30,Preventive Maintenance,Maintenance performed on Grinder #12,Amy Taylor,6.26,1622.1,Multiple parts,Completed,2025-08-08,Maintenance completed successfully. Equipment functioning normally.
+5,9,2025-09-12,Preventive Maintenance,Maintenance performed on Press Machine #09,Tom Anderson,2.72,1334.58,Filter,Scheduled,2025-11-06,Maintenance completed successfully. Equipment functioning normally.
+6,22,2025-08-26,Corrective Maintenance,Maintenance performed on 3D Printer #22,Tom Anderson,1.82,706.3,Motor,Scheduled,2025-11-14,Maintenance completed successfully. Equipment functioning normally.
+7,23,2025-09-04,Calibration,Maintenance performed on CNC Machine #23,Lisa Brown,3.13,1725.76,Sensor,In Progress,2025-11-07,Maintenance completed successfully. Equipment functioning normally.
+8,19,2025-07-22,Upgrade,Maintenance performed on Press Machine #19,Sarah Johnson,3.11,1135.93,Filter,Scheduled,2025-10-05,Maintenance completed successfully. Equipment functioning normally.
+9,24,2025-07-21,Upgrade,Maintenance performed on Robotic Arm #24,John Smith,5.02,257.28,Belt,In Progress,2025-10-01,Maintenance completed successfully. Equipment functioning normally.
+10,15,2025-07-01,Calibration,Maintenance performed on Assembly Line #15,David Davis,2.37,453.3,Filter,Completed,2025-09-25,Maintenance completed successfully. Equipment functioning normally.
+11,15,2025-08-18,Corrective Maintenance,Maintenance performed on Assembly Line #15,John Smith,2.78,1142.47,Filter,Scheduled,2025-10-31,Maintenance completed successfully. Equipment functioning normally.
+12,18,2025-08-28,Preventive Maintenance,Maintenance performed on Laser Cutter #18,Mike Wilson,7.68,1127.87,Belt,In Progress,2025-11-14,Maintenance completed successfully. Equipment functioning normally.
+13,23,2025-09-24,Corrective Maintenance,Maintenance performed on CNC Machine #23,David Davis,2.77,858.89,Motor,Completed,2025-10-25,Maintenance completed successfully. Equipment functioning normally.
+14,4,2025-07-18,Cleaning,Maintenance performed on Assembly Line #04,John Smith,6.96,231.09,Belt,Scheduled,2025-09-10,Maintenance completed successfully. Equipment functioning normally.
+15,20,2025-08-02,Calibration,Maintenance performed on Drill Press #20,Tom Anderson,4.6,898.42,Multiple parts,In Progress,2025-09-19,Maintenance completed successfully. Equipment functioning normally.
+16,2,2025-09-14,Cleaning,Maintenance performed on Conveyor Belt #02,Lisa Brown,4.15,334.45,Multiple parts,Completed,2025-10-29,Maintenance completed successfully. Equipment functioning normally.
+17,24,2025-08-17,Upgrade,Maintenance performed on Robotic Arm #24,Amy Taylor,5.44,1017.61,Multiple parts,Completed,2025-10-26,Maintenance completed successfully. Equipment functioning normally.
+18,13,2025-07-23,Emergency Repair,Maintenance performed on Quality Station #13,Sarah Johnson,5.42,1356.55,Sensor,Scheduled,2025-08-23,Maintenance completed successfully. Equipment functioning normally.
+19,19,2025-08-18,Corrective Maintenance,Maintenance performed on Press Machine #19,Emma Miller,4.3,1631.85,Motor,Scheduled,2025-10-21,Maintenance completed successfully. Equipment functioning normally.
+20,24,2025-07-21,Emergency Repair,Maintenance performed on Robotic Arm #24,Lisa Brown,3.04,288.91,Sensor,Completed,2025-08-30,Maintenance completed successfully. Equipment functioning normally.
+21,14,2025-06-30,Cleaning,Maintenance performed on Welding Station #14,John Smith,3.15,1691.98,Filter,In Progress,2025-07-30,Maintenance completed successfully. Equipment functioning normally.
+22,2,2025-08-01,Upgrade,Maintenance performed on Conveyor Belt #02,Mike Wilson,5.4,1072.08,Motor,Scheduled,2025-09-18,Maintenance completed successfully. Equipment functioning normally.
+23,25,2025-08-27,Preventive Maintenance,Maintenance performed on Inspection Camera #25,Mike Wilson,7.41,995.79,Motor,Scheduled,2025-11-07,Maintenance completed successfully. Equipment functioning normally.
+24,8,2025-08-21,Inspection,Maintenance performed on Assembly Line #08,Sarah Johnson,5.31,1444.27,None,In Progress,2025-10-14,Maintenance completed successfully. Equipment functioning normally.
+25,13,2025-08-21,Corrective Maintenance,Maintenance performed on Quality Station #13,Amy Taylor,3.11,1645.93,Motor,Completed,2025-10-14,Maintenance completed successfully. Equipment functioning normally.
+26,17,2025-08-11,Inspection,Maintenance performed on Quality Station #17,David Davis,3.43,989.79,None,Completed,2025-09-28,Maintenance completed successfully. Equipment functioning normally.
+27,9,2025-08-26,Inspection,Maintenance performed on Press Machine #09,Sarah Johnson,2.94,665.74,Sensor,Completed,2025-11-07,Maintenance completed successfully. Equipment functioning normally.
+28,21,2025-07-30,Emergency Repair,Maintenance performed on 3D Printer #21,Mike Wilson,2.02,1678.32,Belt,Completed,2025-09-28,Maintenance completed successfully. Equipment functioning normally.
+29,22,2025-07-31,Replacement,Maintenance performed on 3D Printer #22,Emma Miller,2.78,664.89,Sensor,In Progress,2025-09-08,Maintenance completed successfully. Equipment functioning normally.
+30,23,2025-07-15,Inspection,Maintenance performed on CNC Machine #23,Amy Taylor,4.91,767.58,Motor,Scheduled,2025-09-03,Maintenance completed successfully. Equipment functioning normally.
+31,2,2025-07-10,Calibration,Maintenance performed on Conveyor Belt #02,Sarah Johnson,1.28,1058.57,Motor,In Progress,2025-09-29,Maintenance completed successfully. Equipment functioning normally.
+32,15,2025-09-20,Preventive Maintenance,Maintenance performed on Assembly Line #15,Lisa Brown,3.5,1490.61,Motor,In Progress,2025-11-20,Maintenance completed successfully. Equipment functioning normally.
+33,3,2025-08-02,Emergency Repair,Maintenance performed on Milling Machine #03,Lisa Brown,2.56,1683.95,Sensor,In Progress,2025-09-01,Maintenance completed successfully. Equipment functioning normally.
+34,25,2025-09-18,Replacement,Maintenance performed on Inspection Camera #25,Lisa Brown,5.69,298.27,Sensor,Scheduled,2025-12-09,Maintenance completed successfully. Equipment functioning normally.
+35,14,2025-09-24,Calibration,Maintenance performed on Welding Station #14,Tom Anderson,5.4,786.24,Motor,In Progress,2025-12-05,Maintenance completed successfully. Equipment functioning normally.
+36,2,2025-08-22,Emergency Repair,Maintenance performed on Conveyor Belt #02,Mike Wilson,4.74,203.99,Belt,Scheduled,2025-11-08,Maintenance completed successfully. Equipment functioning normally.
+37,1,2025-08-15,Emergency Repair,Maintenance performed on Inspection Camera #01,Lisa Brown,4.64,1251.61,Filter,In Progress,2025-10-30,Maintenance completed successfully. Equipment functioning normally.
+38,3,2025-08-10,Corrective Maintenance,Maintenance performed on Milling Machine #03,Tom Anderson,7.89,1422.95,Motor,In Progress,2025-09-22,Maintenance completed successfully. Equipment functioning normally.
+39,11,2025-08-25,Upgrade,Maintenance performed on 3D Printer #11,Emma Miller,7.65,1116.22,Filter,Completed,2025-10-13,Maintenance completed successfully. Equipment functioning normally.
+40,9,2025-09-06,Upgrade,Maintenance performed on Press Machine #09,Tom Anderson,1.71,711.8,Multiple parts,Scheduled,2025-10-25,Maintenance completed successfully. Equipment functioning normally.
+41,16,2025-07-03,Calibration,Maintenance performed on Drill Press #16,Sarah Johnson,3.15,902.78,Motor,In Progress,2025-10-01,Maintenance completed successfully. Equipment functioning normally.
+42,6,2025-07-05,Calibration,Maintenance performed on Milling Machine #06,Sarah Johnson,3.9,929.38,Sensor,In Progress,2025-08-15,Maintenance completed successfully. Equipment functioning normally.
+43,1,2025-07-03,Inspection,Maintenance performed on Inspection Camera #01,Lisa Brown,6.72,1044.18,Motor,Scheduled,2025-08-12,Maintenance completed successfully. Equipment functioning normally.
+44,11,2025-09-03,Emergency Repair,Maintenance performed on 3D Printer #11,John Smith,2.35,929.53,Motor,Completed,2025-10-20,Maintenance completed successfully. Equipment functioning normally.
+45,23,2025-08-04,Inspection,Maintenance performed on CNC Machine #23,David Davis,7.62,1887.26,Filter,Completed,2025-09-26,Maintenance completed successfully. Equipment functioning normally.
+46,19,2025-07-14,Inspection,Maintenance performed on Press Machine #19,Sarah Johnson,4.66,1419.3,Filter,In Progress,2025-09-19,Maintenance completed successfully. Equipment functioning normally.
+47,10,2025-07-17,Calibration,Maintenance performed on Milling Machine #10,David Davis,7.31,1088.07,Multiple parts,Scheduled,2025-09-08,Maintenance completed successfully. Equipment functioning normally.
+48,1,2025-08-29,Replacement,Maintenance performed on Inspection Camera #01,Tom Anderson,1.49,1142.29,Filter,In Progress,2025-11-13,Maintenance completed successfully. Equipment functioning normally.
+49,21,2025-09-12,Calibration,Maintenance performed on 3D Printer #21,Sarah Johnson,4.82,1230.49,Belt,Completed,2025-10-20,Maintenance completed successfully. Equipment functioning normally.
+50,2,2025-07-23,Corrective Maintenance,Maintenance performed on Conveyor Belt #02,Amy Taylor,6.85,388.56,Belt,Scheduled,2025-09-30,Maintenance completed successfully. Equipment functioning normally.

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment - IoT Training Monitoring</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">IoT Training Monitor</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="equipment.html" class="active">Equipment</a></li>
+                <li><a href="maintenance.html">Maintenance</a></li>
+                <li><a href="analytics.html">Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="dashboard">
+            <h1>Equipment Management</h1>
+            
+            <div class="metric-card">
+                <h3>All Equipment</h3>
+                <div id="equipmentList">
+                    <p>Loading equipment data...</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="metric-card">
+                    <h3>Equipment by Status</h3>
+                    <div id="statusDistribution">
+                        <p>Loading distribution...</p>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Equipment by Type</h3>
+                    <div id="typeDistribution">
+                        <p>Loading type distribution...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 IoT Training Equipment Monitoring System. All rights reserved.</p>
+    </footer>
+
+    <script src="js/equipment.js"></script>
+</body>
+</html>

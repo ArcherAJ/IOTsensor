@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Training Equipment Monitoring - Next Generation Lab Management</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="css/style.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    
+    <!-- Critical CSS inline -->
+    <style>
+        /* Critical above-the-fold CSS */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .main-content { margin-top: 80px; }
+        .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; min-height: calc(100vh - 80px); }
+    </style>
+    
+    <!-- Non-critical CSS -->
+    <link rel="stylesheet" href="css/style.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/style.css"></noscript>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Performance optimizations -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Next-generation IoT Training Equipment Monitoring System with AI insights, 3D virtual labs, and real-time analytics">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Preload 3D libraries -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/chart.js" as="script">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-section">
+                <i class="fas fa-microchip logo-icon"></i>
+                <h1 class="logo">IoT Lab Monitor</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active" data-section="home">
+                    <i class="fas fa-home"></i> Home
+                </a></li>
+                <li><a href="#dashboard" class="nav-link" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a></li>
+                <li><a href="#virtual-lab" class="nav-link" data-section="virtual-lab">
+                    <i class="fas fa-cube"></i> Virtual Lab
+                </a></li>
+                <li><a href="#ai-insights" class="nav-link" data-section="ai-insights">
+                    <i class="fas fa-brain"></i> AI Insights
+                </a></li>
+                <li><a href="#gamification" class="nav-link" data-section="gamification">
+                    <i class="fas fa-trophy"></i> Gamification
+                </a></li>
+                <li><a href="#technology" class="nav-link" data-section="technology">
+                    <i class="fas fa-cogs"></i> Technology
+                </a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="notification-btn" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge">3</span>
+                </button>
+                <div class="user-menu">
+                    <button class="user-btn">
+                        <i class="fas fa-user-circle"></i>
+                        <span>John Doe</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="hero-section active">
+            <div class="hero-background">
+                <div class="floating-elements">
+                    <div class="floating-icon" style="--delay: 0s;"><i class="fas fa-microchip"></i></div>
+                    <div class="floating-icon" style="--delay: 1s;"><i class="fas fa-robot"></i></div>
+                    <div class="floating-icon" style="--delay: 2s;"><i class="fas fa-chart-line"></i></div>
+                    <div class="floating-icon" style="--delay: 3s;"><i class="fas fa-shield-alt"></i></div>
+                </div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">Next-Generation</span><br>
+                        IoT Training Lab Management
+                    </h1>
+                    <p class="hero-description">
+                        Experience the future of vocational training with AI-powered equipment monitoring, 
+                        3D virtual labs, and intelligent analytics. Transform your training environment 
+                        with cutting-edge technology.
+                    </p>
+                    <div class="hero-actions">
+                        <button class="cta-button primary" onclick="showSection('dashboard')">
+                            <i class="fas fa-rocket"></i>
+                            Explore Dashboard
+                        </button>
+                        <button class="cta-button secondary" onclick="showSection('virtual-lab')">
+                            <i class="fas fa-cube"></i>
+                            Enter Virtual Lab
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="dashboard-preview">
+                        <div class="preview-card">
+                            <div class="preview-header">
+                                <div class="preview-dots">
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <div class="preview-title">IoT Lab Monitor</div>
+                            </div>
+                            <div class="preview-content">
+                                <div class="preview-stats">
+                                    <div class="preview-stat">
+                                        <div class="stat-icon">⚙️</div>
+                                        <div class="stat-value">25</div>
+                                        <div class="stat-label">Equipment</div>
+                                    </div>
+                                    <div class="preview-stat">
+                                        <div class="stat-icon">📊</div>
+                                        <div class="stat-value">94%</div>
+                                        <div class="stat-label">Uptime</div>
+                                    </div>
+                                    <div class="preview-stat">
+                                        <div class="stat-icon">🔔</div>
+                                        <div class="stat-value">3</div>
+                                        <div class="stat-label">Alerts</div>
+                                    </div>
+                                </div>
+                                <div class="preview-chart">
+                                    <div class="chart-bars">
+                                        <div class="bar" style="height: 60%"></div>
+                                        <div class="bar" style="height: 80%"></div>
+                                        <div class="bar" style="height: 45%"></div>
+                                        <div class="bar" style="height: 90%"></div>
+                                        <div class="bar" style="height: 70%"></div>
+                                        <div class="bar" style="height: 85%"></div>
+                                    </div>
+                                </div>
+                                <div class="preview-footer">
+                                    <div class="status-indicator">
+                                        <div class="status-dot active"></div>
+                                        <span>System Online</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-time Dashboard Section -->
+        <section id="dashboard" class="dashboard-section">
+            <div class="section-header">
+                <h2>Real-Time Equipment Dashboard</h2>
+                <p>Monitor equipment status, performance metrics, and alerts in real-time</p>
+            </div>
+            
+            <div class="dashboard-grid">
+                <!-- Key Metrics Cards -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 id="total-equipment">0</h3>
+                            <p>Total Equipment</p>
+                            <div class="metric-trend up">
+                                <i class="fas fa-arrow-up"></i> +5%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 id="active-equipment">0</h3>
+                            <p>Active Equipment</p>
+                            <div class="metric-trend up">
+                                <i class="fas fa-arrow-up"></i> +12%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 id="maintenance-alerts">0</h3>
+                            <p>Maintenance Alerts</p>
+                            <div class="metric-trend down">
+                                <i class="fas fa-arrow-down"></i> -8%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 id="uptime-percentage">0%</h3>
+                            <p>System Uptime</p>
+                            <div class="metric-trend up">
+                                <i class="fas fa-arrow-up"></i> +2%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Equipment Performance</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-period="24h">24H</button>
+                                <button class="chart-btn" data-period="7d">7D</button>
+                                <button class="chart-btn" data-period="30d">30D</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Energy Consumption</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-period="24h">24H</button>
+                                <button class="chart-btn" data-period="7d">7D</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="energyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipment Status Grid -->
+                <div class="equipment-grid">
+                    <div class="equipment-card">
+                        <div class="equipment-header">
+                            <h4>CNC Machine #1</h4>
+                            <span class="status-badge active">Active</span>
+                        </div>
+                        <div class="equipment-metrics">
+                            <div class="metric">
+                                <span class="label">Temperature:</span>
+                                <span class="value">45°C</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Efficiency:</span>
+                                <span class="value">92%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Usage:</span>
+                                <span class="value">6.5h</span>
+                            </div>
+                        </div>
+                        <div class="equipment-actions">
+                            <button class="action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn"><i class="fas fa-cog"></i></button>
+                            <button class="action-btn"><i class="fas fa-chart-bar"></i></button>
+                        </div>
+                    </div>
+                    <div class="equipment-card">
+                        <div class="equipment-header">
+                            <h4>Robot Arm #1</h4>
+                            <span class="status-badge active">Active</span>
+                        </div>
+                        <div class="equipment-metrics">
+                            <div class="metric">
+                                <span class="label">Position:</span>
+                                <span class="value">X: 10, Y: 5</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Torque:</span>
+                                <span class="value">85%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Status:</span>
+                                <span class="value">Running</span>
+                            </div>
+                        </div>
+                        <div class="equipment-actions">
+                            <button class="action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn"><i class="fas fa-cog"></i></button>
+                            <button class="action-btn"><i class="fas fa-chart-bar"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Virtual Lab Section -->
+        <section id="virtual-lab" class="virtual-lab-section">
+            <div class="section-header">
+                <h2>3D Virtual Training Lab</h2>
+                <p>Immersive 3D environment for hands-on equipment training and exploration</p>
+            </div>
+            
+            <div class="virtual-lab-container">
+                <div class="lab-controls">
+                    <div class="environment-selector">
+                        <h3>Select Environment</h3>
+                        <div class="environment-cards">
+                            <div class="env-card active" data-env="manufacturing">
+                                <div class="env-icon">
+                                    <i class="fas fa-industry"></i>
+                                </div>
+                                <h4>Manufacturing Lab</h4>
+                                <p>CNC machines, robotics, quality control</p>
+                            </div>
+                            <div class="env-card" data-env="automotive">
+                                <div class="env-icon">
+                                    <i class="fas fa-car"></i>
+                                </div>
+                                <h4>Automotive Lab</h4>
+                                <p>Engine diagnostics, hybrid systems</p>
+                            </div>
+                            <div class="env-card" data-env="renewable">
+                                <div class="env-icon">
+                                    <i class="fas fa-solar-panel"></i>
+                                </div>
+                                <h4>Renewable Energy Lab</h4>
+                                <p>Solar panels, wind turbines</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-selector">
+                        <h3>Training Scenarios</h3>
+                        <div class="scenario-buttons">
+                            <button class="scenario-btn active" data-scenario="troubleshooting">
+                                <i class="fas fa-wrench"></i>
+                                Troubleshooting
+                            </button>
+                            <button class="scenario-btn" data-scenario="maintenance">
+                                <i class="fas fa-tools"></i>
+                                Maintenance
+                            </button>
+                            <button class="scenario-btn" data-scenario="safety">
+                                <i class="fas fa-shield-alt"></i>
+                                Safety Training
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lab-viewport">
+                    <div id="three-container" class="three-container">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <p>Loading 3D Environment...</p>
+                        </div>
+                    </div>
+                    <div class="lab-overlay">
+                        <div class="equipment-info-panel">
+                            <h4>Equipment Information</h4>
+                            <div class="info-content">
+                                <p>Click on equipment to view details</p>
+                            </div>
+                        </div>
+                        <div class="interaction-panel">
+                            <h4>Interactive Controls</h4>
+                            <div class="control-buttons">
+                                <button class="control-btn"><i class="fas fa-play"></i> Start</button>
+                                <button class="control-btn"><i class="fas fa-pause"></i> Pause</button>
+                                <button class="control-btn"><i class="fas fa-stop"></i> Stop</button>
+                                <button class="control-btn"><i class="fas fa-redo"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Insights Section -->
+        <section id="ai-insights" class="ai-insights-section">
+            <div class="section-header">
+                <h2>AI-Powered Insights</h2>
+                <p>Intelligent analytics and predictive recommendations powered by machine learning</p>
+            </div>
+            
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="insight-meta">
+                            <h4>Anomaly Detection</h4>
+                            <span class="confidence">Confidence: 85%</span>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Unusual temperature patterns detected in CNC Machine #2. 
+                           Recommend immediate inspection.</p>
+                        <div class="insight-actions">
+                            <button class="action-btn primary">View Details</button>
+                            <button class="action-btn secondary">Schedule Inspection</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="insight-meta">
+                            <h4>Efficiency Trend</h4>
+                            <span class="confidence">Confidence: 75%</span>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Equipment efficiency showing declining trend over past 7 days. 
+                           Consider preventive maintenance.</p>
+                        <div class="insight-actions">
+                            <button class="action-btn primary">View Trend</button>
+                            <button class="action-btn secondary">Schedule Maintenance</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="insight-meta">
+                            <h4>Optimization Opportunity</h4>
+                            <span class="confidence">Confidence: 70%</span>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Power consumption 20% above average. Potential energy savings: 
+                           150 kWh/month with optimization.</p>
+                        <div class="insight-actions">
+                            <button class="action-btn primary">View Analysis</button>
+                            <button class="action-btn secondary">Apply Optimization</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insights-visualization">
+                <div class="viz-card">
+                    <h3>Predictive Analytics Dashboard</h3>
+                    <div class="viz-container">
+                        <canvas id="predictiveChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gamification Section -->
+        <section id="gamification" class="gamification-section">
+            <div class="section-header">
+                <h2>Gamification & Achievements</h2>
+                <p>Engage users with rewards, badges, and friendly competition</p>
+            </div>
+            
+            <div class="gamification-grid">
+                <div class="leaderboard-card">
+                    <h3>Leaderboard</h3>
+                    <div class="leaderboard-list">
+                        <div class="leaderboard-item rank-1">
+                            <div class="rank">1</div>
+                            <div class="user-info">
+                                <div class="avatar">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <div class="user-details">
+                                    <h4>Jane Smith</h4>
+                                    <p>Lab Manager</p>
+                                </div>
+                            </div>
+                            <div class="score">2,100 pts</div>
+                        </div>
+                        <div class="leaderboard-item rank-2">
+                            <div class="rank">2</div>
+                            <div class="user-info">
+                                <div class="avatar">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <div class="user-details">
+                                    <h4>John Doe</h4>
+                                    <p>Trainer</p>
+                                </div>
+                            </div>
+                            <div class="score">1,250 pts</div>
+                        </div>
+                        <div class="leaderboard-item rank-3">
+                            <div class="rank">3</div>
+                            <div class="user-info">
+                                <div class="avatar">
+                                    <i class="fas fa-award"></i>
+                                </div>
+                                <div class="user-details">
+                                    <h4>Bob Wilson</h4>
+                                    <p>Student</p>
+                                </div>
+                            </div>
+                            <div class="score">850 pts</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="badges-card">
+                    <h3>Available Badges</h3>
+                    <div class="badges-grid">
+                        <div class="badge-item earned">
+                            <div class="badge-icon">🛡️</div>
+                            <h4>Safety First</h4>
+                            <p>Complete 100 hours of safe usage</p>
+                            <div class="badge-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%"></div>
+                                </div>
+                                <span>Earned!</span>
+                            </div>
+                        </div>
+                        <div class="badge-item in-progress">
+                            <div class="badge-icon">⚡</div>
+                            <h4>Efficiency Expert</h4>
+                            <p>Achieve 90% efficiency for 30 days</p>
+                            <div class="badge-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 65%"></div>
+                                </div>
+                                <span>65%</span>
+                            </div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon">🔧</div>
+                            <h4>Maintenance Hero</h4>
+                            <p>Complete 10 maintenance tasks</p>
+                            <div class="badge-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 30%"></div>
+                                </div>
+                                <span>30%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="challenges-card">
+                    <h3>Current Challenges</h3>
+                    <div class="challenges-list">
+                        <div class="challenge-item">
+                            <div class="challenge-icon">
+                                <i class="fas fa-target"></i>
+                            </div>
+                            <div class="challenge-content">
+                                <h4>Training Excellence</h4>
+                                <p>Complete 20 training sessions this month</p>
+                                <div class="challenge-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 60%"></div>
+                                    </div>
+                                    <span>12/20 sessions</span>
+                                </div>
+                            </div>
+                            <div class="challenge-reward">200 pts</div>
+                        </div>
+                        <div class="challenge-item">
+                            <div class="challenge-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="challenge-content">
+                                <h4>Safety Advocate</h4>
+                                <p>Report 5 safety improvements</p>
+                                <div class="challenge-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 40%"></div>
+                                    </div>
+                                    <span>2/5 reports</span>
+                                </div>
+                            </div>
+                            <div class="challenge-reward">150 pts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Section -->
+        <section id="technology" class="technology-section">
+            <div class="section-header">
+                <h2>Technology Stack</h2>
+                <p>Cutting-edge technologies powering the next generation of lab management</p>
+            </div>
+            
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>Backend Technologies</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <div class="tech-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="tech-info">
+                                <h4>FastAPI</h4>
+                                <p>Modern, fast web framework for building APIs</p>
+                                <span class="tech-status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="tech-info">
+                                <h4>PostgreSQL</h4>
+                                <p>Advanced open source relational database</p>
+                                <span class="tech-status active">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>AI & Machine Learning</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <div class="tech-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="tech-info">
+                                <h4>scikit-learn</h4>
+                                <p>Machine learning library for predictive analytics</p>
+                                <span class="tech-status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="tech-info">
+                                <h4>TensorFlow</h4>
+                                <p>Deep learning framework for advanced AI models</p>
+                                <span class="tech-status active">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>Frontend & 3D</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <div class="tech-icon">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <div class="tech-info">
+                                <h4>Three.js</h4>
+                                <p>3D graphics library for virtual lab environments</p>
+                                <span class="tech-status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="tech-info">
+                                <h4>Responsive Design</h4>
+                                <p>Mobile-first design for all devices</p>
+                                <span class="tech-status active">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="architecture-diagram">
+                <h3>System Architecture</h3>
+                <div class="diagram-container">
+                    <div class="architecture-layer">
+                        <h4>Frontend Layer</h4>
+                        <div class="layer-items">
+                            <span class="layer-item">React/Vue.js</span>
+                            <span class="layer-item">Three.js</span>
+                            <span class="layer-item">Chart.js</span>
+                        </div>
+                    </div>
+                    <div class="architecture-layer">
+                        <h4>API Layer</h4>
+                        <div class="layer-items">
+                            <span class="layer-item">FastAPI</span>
+                            <span class="layer-item">WebSocket</span>
+                            <span class="layer-item">REST APIs</span>
+                        </div>
+                    </div>
+                    <div class="architecture-layer">
+                        <h4>AI/ML Layer</h4>
+                        <div class="layer-items">
+                            <span class="layer-item">scikit-learn</span>
+                            <span class="layer-item">TensorFlow</span>
+                            <span class="layer-item">Pandas</span>
+                        </div>
+                    </div>
+                    <div class="architecture-layer">
+                        <h4>Data Layer</h4>
+                        <div class="layer-items">
+                            <span class="layer-item">PostgreSQL</span>
+                            <span class="layer-item">Redis</span>
+                            <span class="layer-item">Time Series DB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- AI Chatbot -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <div class="chatbot-info">
+                <div class="chatbot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="chatbot-details">
+                    <h4>AI Assistant</h4>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+            <button class="chatbot-toggle" id="chatbotToggle">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message ai-message">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <p>Hello! I'm your AI assistant. How can I help you with equipment monitoring today?</p>
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="Type your message...">
+            <button id="chatbotSend">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chatbot Toggle Button -->
+    <button class="chatbot-toggle-btn" id="chatbotToggleBtn">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="close-notifications" id="closeNotifications">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <div class="notification-item unread">
+                <div class="notification-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Equipment Alert</h4>
+                    <p>High temperature detected on CNC Machine #1</p>
+                    <span class="notification-time">2 minutes ago</span>
+                </div>
+            </div>
+            <div class="notification-item unread">
+                <div class="notification-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Achievement Unlocked!</h4>
+                    <p>You've earned the 'Safety First' badge</p>
+                    <span class="notification-time">1 hour ago</span>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Maintenance Due</h4>
+                    <p>Scheduled maintenance for Robot Arm #2</p>
+                    <span class="notification-time">3 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Loading Indicator -->
+    <div id="sectionLoading" class="section-loading">
+        <div class="loading-spinner"></div>
+        <p>Loading section...</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>IoT Lab Monitor</h4>
+                <p>Next-generation equipment monitoring and training platform</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Features</h4>
+                <ul>
+                    <li><a href="#dashboard">Real-time Monitoring</a></li>
+                    <li><a href="#virtual-lab">3D Virtual Lab</a></li>
+                    <li><a href="#ai-insights">AI Insights</a></li>
+                    <li><a href="#gamification">Gamification</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Community</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Feedback</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Technology</h4>
+                <ul>
+                    <li><a href="#technology">Tech Stack</a></li>
+                    <li><a href="#">API Documentation</a></li>
+                    <li><a href="#">Architecture</a></li>
+                    <li><a href="#">Scalability</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 IoT Training Equipment Monitoring System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Performance monitoring -->
+    <script>
+        // Performance monitoring
+        window.addEventListener('load', () => {
+            const loadTime = performance.now();
+            console.log(`Page loaded in ${loadTime.toFixed(2)}ms`);
+            
+            // Send performance metrics to backend
+            fetch('/api/performance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    load_time: loadTime,
+                    user_agent: navigator.userAgent,
+                    timestamp: new Date().toISOString()
+                })
+            }).catch(console.error);
+        });
+    </script>
+
+    <!-- Lazy load non-critical scripts -->
+    <script>
+        // Load scripts when needed
+        function loadScript(src, callback) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = callback;
+            document.head.appendChild(script);
+        }
+
+        // Load main functionality immediately
+        loadScript('js/main.js');
+
+        // Load 3D libraries only when virtual lab is accessed
+        let threeLoaded = false;
+        function loadThreeJS() {
+            if (!threeLoaded) {
+                threeLoaded = true;
+                loadScript('https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js', () => {
+                    loadScript('js/virtual-lab.js');
+                });
+            }
+        }
+
+        // Load Chart.js only when dashboard is accessed
+        let chartLoaded = false;
+        function loadChartJS() {
+            if (!chartLoaded) {
+                chartLoaded = true;
+                loadScript('https://cdn.jsdelivr.net/npm/chart.js');
+            }
+        }
+
+        // Load chatbot only when needed
+        let chatbotLoaded = false;
+        function loadChatbot() {
+            if (!chatbotLoaded) {
+                chatbotLoaded = true;
+                loadScript('js/chatbot.js');
+            }
+        }
+
+        // Expose load functions globally
+        window.loadThreeJS = loadThreeJS;
+        window.loadChartJS = loadChartJS;
+        window.loadChatbot = loadChatbot;
+    </script>
+</body>
+</html>

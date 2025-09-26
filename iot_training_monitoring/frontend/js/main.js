@@ -28,6 +28,9 @@ class IoTLabMonitor {
         
         this.setupEventListeners();
         this.initializeCriticalFeatures();
+        
+        // Ensure home section is active by default
+        this.showSection('home');
     }
 
     initializeCriticalFeatures() {
@@ -1142,17 +1145,39 @@ document.addEventListener('DOMContentLoaded', () => {
 // Global functions for HTML onclick handlers
 function showSection(sectionName) {
     console.log('Global showSection called with:', sectionName);
+    
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => showSection(sectionName));
+        return;
+    }
+    
     if (window.iotLabMonitor) {
         window.iotLabMonitor.showSection(sectionName);
     } else {
-        console.error('iotLabMonitor not initialized yet');
-        // Fallback: direct section switching
+        console.log('iotLabMonitor not initialized yet, using fallback');
+        // Fallback: direct section switching with animation
         document.querySelectorAll('section').forEach(section => {
             section.classList.remove('active');
         });
+        
         const targetSection = document.getElementById(sectionName);
         if (targetSection) {
             targetSection.classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            console.error('Section not found:', sectionName);
         }
     }
 }

@@ -1,26 +1,31 @@
-id,name,type,location,status,manufacturer,model,serial_number,purchase_date,warranty_expiry,next_maintenance,last_maintenance,maintenance_cost,energy_rating,safety_certification,training_required,max_capacity,current_load,efficiency
-1,Inspection Camera #01,Inspection Camera,Training Room 1,Idle,Universal Robots,MODEL-8554,SN135025,2023-11-25,2028-06-02,2025-10-01,2025-08-29,1646.45,B,OHSAS 18001,Basic,606,34,78.93
-2,Conveyor Belt #02,Conveyor Belt,Training Room 1,Warning,ABB,MODEL-5175,SN159466,2025-06-16,2025-06-04,2025-12-22,2025-09-08,4494.83,D,CE,Basic,894,51,88.51
-3,Milling Machine #03,Milling Machine,Maintenance Bay,Active,ABB,MODEL-1345,SN242213,2022-10-13,2026-01-17,2025-12-10,2025-09-13,914.39,C,CE,Intermediate,553,43,93.58
-4,Assembly Line #04,Assembly Line,Training Room 2,Active,Fanuc,MODEL-7421,SN242618,2023-03-20,2028-01-01,2025-11-15,2025-08-28,961.22,A,CE,Advanced,264,90,91.86
-5,Grinder #05,Grinder,Manufacturing Lab A,Active,Siemens,MODEL-3177,SN575403,2025-05-26,2026-07-15,2025-12-14,2025-09-05,3470.65,C,OHSAS 18001,Basic,989,26,75.51
-6,Milling Machine #06,Milling Machine,Assembly Floor,Active,ABB,MODEL-9844,SN387871,2025-01-31,2028-09-06,2025-12-09,2025-08-30,1948.64,D,CE,Basic,583,22,84.02
-7,3D Printer #07,3D Printer,Training Room 2,Active,ABB,MODEL-5151,SN901149,2025-03-10,2027-09-30,2025-10-16,2025-09-06,781.3,C,ISO 14001,Basic,442,19,73.0
-8,Assembly Line #08,Assembly Line,Prototype Lab,Active,Fanuc,MODEL-3934,SN659705,2023-05-30,2027-06-07,2025-10-08,2025-09-11,2836.75,D,ISO 9001,Advanced,471,99,89.02
-9,Press Machine #09,Press Machine,Packaging Area,Idle,Festo,MODEL-1956,SN577854,2022-10-21,2025-11-15,2025-11-09,2025-09-08,902.27,B,CE,Intermediate,693,15,81.36
-10,Milling Machine #10,Milling Machine,Training Room 2,Maintenance,Siemens,MODEL-5214,SN472222,2023-04-17,2025-01-21,2025-11-10,2025-09-14,3404.46,C,OHSAS 18001,Basic,164,100,90.09
-11,3D Printer #11,3D Printer,Manufacturing Lab A,Active,Siemens,MODEL-8978,SN685450,2024-06-12,2027-07-08,2025-11-03,2025-09-23,2299.83,D,OHSAS 18001,Advanced,837,55,92.39
-12,Grinder #12,Grinder,Packaging Area,Active,Universal Robots,MODEL-4817,SN741767,2025-07-28,2026-02-12,2025-12-01,2025-08-28,1180.84,C,OHSAS 18001,Intermediate,683,93,94.37
-13,Quality Station #13,Quality Station,Research Lab,Warning,Siemens,MODEL-9533,SN745049,2025-01-24,2025-07-26,2025-11-05,2025-09-16,2260.84,C,CE,Basic,123,41,73.68
-14,Welding Station #14,Welding Station,Training Room 1,Idle,ABB,MODEL-4812,SN325401,2025-05-16,2026-08-15,2025-10-29,2025-09-07,735.58,C,ISO 14001,Intermediate,580,39,82.31
-15,Assembly Line #15,Assembly Line,Quality Control Area,Warning,KUKA,MODEL-6693,SN198553,2025-08-21,2026-09-30,2025-11-05,2025-09-10,2918.62,D,ISO 14001,Basic,79,17,74.84
-16,Drill Press #16,Drill Press,Training Room 1,Critical,ABB,MODEL-9872,SN705082,2023-08-26,2027-10-26,2025-11-06,2025-09-02,1903.94,C,ISO 14001,Advanced,817,27,85.91
-17,Quality Station #17,Quality Station,Prototype Lab,Active,ABB,MODEL-9169,SN926023,2024-11-14,2027-05-25,2025-12-01,2025-09-09,4886.42,D,ISO 14001,Basic,533,54,82.22
-18,Laser Cutter #18,Laser Cutter,Research Lab,Active,Siemens,MODEL-6403,SN595081,2023-05-28,2028-05-26,2025-12-22,2025-08-28,4084.81,B,CE,Advanced,835,5,86.37
-19,Press Machine #19,Press Machine,Packaging Area,Active,ABB,MODEL-8077,SN665542,2024-09-08,2026-02-22,2025-12-03,2025-09-13,1834.82,A,CE,Advanced,82,56,75.94
-20,Drill Press #20,Drill Press,Training Room 2,Active,ABB,MODEL-1349,SN414272,2023-07-16,2026-11-30,2025-12-25,2025-08-29,1753.48,A,CE,Basic,722,10,77.78
-21,3D Printer #21,3D Printer,Manufacturing Lab B,Active,ABB,MODEL-1152,SN290847,2025-01-28,2025-05-08,2025-11-24,2025-09-19,4611.51,B,ISO 9001,Advanced,395,89,94.95
-22,3D Printer #22,3D Printer,Prototype Lab,Active,Festo,MODEL-5525,SN115408,2023-09-28,2024-09-30,2025-12-20,2025-08-27,2201.12,C,OHSAS 18001,Intermediate,912,17,94.15
-23,CNC Machine #23,CNC Machine,Assembly Floor,Warning,Fanuc,MODEL-8899,SN268342,2025-05-14,2025-03-31,2025-10-16,2025-09-23,3894.44,C,ISO 14001,Advanced,56,90,82.02
-24,Robotic Arm #24,Robotic Arm,Packaging Area,Active,KUKA,MODEL-6048,SN859419,2023-10-13,2025-04-19,2025-11-14,2025-09-19,4242.19,C,ISO 14001,Advanced,254,69,74.17
-25,Inspection Camera #25,Inspection Camera,Manufacturing Lab B,Active,Universal Robots,MODEL-6698,SN656422,2023-07-25,2025-06-11,2025-11-15,2025-09-20,616.24,B,ISO 14001,Advanced,511,42,88.44
+id,name,type,location,status,manufacturer,model,serial_number,purchase_date,warranty_expiry,next_maintenance,last_maintenance,maintenance_cost,energy_rating,safety_certification,training_required,max_capacity,current_load,efficiency,age_years,operating_hours,maintenance_frequency_days
+1,Sensor Array #01,Sensor Array,Manufacturing Lab A,Maintenance,Universal Robots,MODEL-3910,SN497928,2024-07-15,2024-10-03,2025-12-08,2025-09-04,3741.86,D,ISO 14001,Intermediate,72,66,76.8,9.5,38489,110
+2,Robotic Arm #02,Robotic Arm,Packaging Area,Active,KUKA,MODEL-5455,SN590799,2025-05-17,2026-07-08,2025-11-30,2025-09-10,1066.59,D,UL,Advanced,854,77,91.25,7.7,28302,156
+3,Welding Station #03,Welding Station,Training Room 2,Active,Schneider,MODEL-8505,SN600941,2023-01-12,2028-09-16,2025-10-23,2025-09-03,2073.71,D,OHSAS 18001,Basic,809,26,80.65,1.0,31091,120
+4,Quality Station #04,Quality Station,Quality Control Area,Idle,KUKA,MODEL-7779,SN607357,2023-03-05,2028-07-04,2025-12-07,2025-09-18,848.61,A,CE,Advanced,572,39,84.5,5.8,41418,89
+5,Grinder #05,Grinder,Quality Control Area,Active,Universal Robots,MODEL-3723,SN465565,2025-07-31,2026-05-31,2025-10-03,2025-09-07,3244.7,D,ISO 9001,Intermediate,464,86,85.62,1.5,4364,85
+6,3D Printer #06,3D Printer,Training Room 1,Active,Schneider,MODEL-7624,SN838026,2024-08-05,2027-06-05,2025-10-29,2025-09-15,2801.97,A,ISO 14001,Basic,310,93,85.47,7.2,40026,166
+7,PLC Controller #07,PLC Controller,Assembly Floor,Active,Festo,MODEL-1849,SN203802,2024-01-07,2027-03-16,2025-12-11,2025-09-01,659.53,B,OHSAS 18001,Advanced,719,84,70.48,2.0,29361,104
+8,Welding Station #08,Welding Station,Quality Control Area,Active,Bosch,MODEL-4728,SN215700,2022-12-06,2028-04-21,2025-10-20,2025-09-16,4438.46,D,CE,Basic,281,62,71.82,7.1,7165,86
+9,Pneumatic System #09,Pneumatic System,Assembly Floor,Maintenance,KUKA,MODEL-5080,SN914299,2022-12-01,2028-09-14,2025-11-03,2025-08-30,2989.13,B,ISO 9001,Advanced,154,32,88.33,6.5,20838,62
+10,Conveyor Belt #10,Conveyor Belt,Manufacturing Lab B,Idle,Festo,MODEL-1106,SN807905,2024-09-13,2028-07-10,2025-11-09,2025-09-16,1776.62,D,ISO 14001,Intermediate,929,33,78.78,6.9,3735,55
+11,Sensor Array #11,Sensor Array,Precision Lab,Maintenance,Bosch,MODEL-3790,SN523661,2025-01-06,2026-01-05,2025-11-12,2025-09-09,1363.56,A,CE,Intermediate,367,28,87.35,0.5,14101,132
+12,Conveyor Belt #12,Conveyor Belt,Training Room 1,Active,Fanuc,MODEL-6285,SN374261,2025-07-26,2028-09-14,2025-12-09,2025-09-05,4442.84,C,CE,Intermediate,21,51,91.96,7.5,26693,84
+13,PLC Controller #13,PLC Controller,Advanced Manufacturing,Active,Siemens,MODEL-3277,SN293125,2024-08-30,2028-01-27,2025-10-11,2025-08-30,1835.14,C,UL,Basic,297,52,88.25,4.6,25088,148
+14,Conveyor Belt #14,Conveyor Belt,Manufacturing Lab A,Active,KUKA,MODEL-3537,SN116329,2025-06-13,2026-09-12,2025-11-25,2025-09-03,641.43,C,ISO 14001,Advanced,778,47,74.85,3.5,16684,115
+15,Lathe Machine #15,Lathe Machine,Manufacturing Lab B,Active,Bosch,MODEL-2259,SN149459,2023-02-05,2028-04-23,2025-10-30,2025-08-29,4956.22,B,CE,Basic,702,56,80.43,5.4,32073,130
+16,Laser Cutter #16,Laser Cutter,Manufacturing Lab B,Active,Fanuc,MODEL-6543,SN640252,2022-10-30,2026-06-17,2025-10-18,2025-08-27,3393.48,C,OHSAS 18001,Basic,612,67,92.95,9.6,4195,82
+17,Hydraulic Press #17,Hydraulic Press,Maintenance Bay,Idle,KUKA,MODEL-8716,SN971560,2023-12-25,2026-12-05,2025-10-12,2025-09-12,1622.19,C,UL,Intermediate,104,19,86.58,3.1,37839,153
+18,Lathe Machine #18,Lathe Machine,Automation Center,Idle,Siemens,MODEL-1349,SN404625,2024-04-27,2025-10-08,2025-11-24,2025-08-31,1262.4,C,ISO 9001,Basic,431,99,72.68,2.6,40932,111
+19,Packaging Machine #19,Packaging Machine,Assembly Floor,Active,ABB,MODEL-9467,SN702034,2024-11-28,2024-09-27,2025-10-13,2025-09-11,2822.95,A,ISO 9001,Intermediate,669,32,86.6,8.9,47897,113
+20,Control Panel #20,Control Panel,Assembly Floor,Idle,Siemens,MODEL-1758,SN410410,2024-06-19,2026-06-08,2025-11-18,2025-09-01,3049.19,B,ISO 14001,Intermediate,154,98,90.83,7.3,34123,73
+21,Sensor Array #21,Sensor Array,Manufacturing Lab B,Maintenance,ABB,MODEL-8781,SN421945,2022-10-29,2026-05-16,2025-10-01,2025-09-02,4627.75,C,UL,Intermediate,88,64,72.24,1.4,49650,36
+22,Packaging Machine #22,Packaging Machine,Quality Control Area,Idle,Festo,MODEL-8784,SN472294,2023-06-10,2025-12-29,2025-10-28,2025-09-22,4426.47,A,ISO 9001,Intermediate,382,75,91.11,3.4,14605,57
+23,Robotic Arm #23,Robotic Arm,Manufacturing Lab A,Maintenance,Universal Robots,MODEL-8718,SN180760,2025-02-22,2028-02-05,2025-09-28,2025-09-17,3942.48,B,ISO 9001,Intermediate,712,84,93.5,2.4,40613,51
+24,Assembly Line #24,Assembly Line,Maintenance Bay,Warning,Festo,MODEL-5903,SN806259,2023-10-24,2025-01-11,2025-09-28,2025-08-31,3286.21,D,OHSAS 18001,Intermediate,656,63,70.26,3.1,33638,165
+25,Quality Station #25,Quality Station,Manufacturing Lab B,Idle,Bosch,MODEL-6778,SN637727,2023-12-07,2025-02-17,2025-11-10,2025-09-11,3449.83,D,UL,Advanced,318,78,76.83,4.5,10693,147
+26,Milling Machine #26,Milling Machine,Advanced Manufacturing,Maintenance,Universal Robots,MODEL-1489,SN923577,2024-11-09,2027-01-08,2025-12-06,2025-08-27,1323.15,C,UL,Intermediate,633,30,74.78,7.9,1502,76
+27,Quality Station #27,Quality Station,Quality Control Area,Active,ABB,MODEL-6246,SN180925,2024-08-15,2028-04-06,2025-12-20,2025-09-17,2219.81,B,CE,Advanced,472,9,82.36,8.6,20184,162
+28,Lathe Machine #28,Lathe Machine,Precision Lab,Active,ABB,MODEL-9437,SN224097,2024-01-14,2028-02-19,2025-12-03,2025-09-23,2453.21,C,CE,Basic,971,26,94.94,4.1,28391,44
+29,Robotic Arm #29,Robotic Arm,Prototype Lab,Maintenance,Fanuc,MODEL-9251,SN642039,2023-01-22,2027-07-11,2025-10-24,2025-09-08,4754.88,D,ISO 9001,Advanced,583,64,81.38,6.3,40652,176
+30,Lathe Machine #30,Lathe Machine,Packaging Area,Active,Siemens,MODEL-9723,SN800191,2023-01-14,2025-01-09,2025-10-11,2025-09-04,2350.27,B,ISO 14001,Intermediate,906,76,77.87,1.0,39376,69

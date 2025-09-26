@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .nav { background: #f0f0f0; padding: 10px; margin-bottom: 20px; }
+        .nav button { margin: 5px; padding: 10px 20px; cursor: pointer; }
+        .nav button.active { background: #007bff; color: white; }
+        section { display: none; padding: 20px; border: 1px solid #ccc; margin: 10px 0; }
+        section.active { display: block; }
+        .test-result { background: #e8f5e8; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Navigation Test</h1>
+    
+    <div class="nav">
+        <button onclick="showSection('home')" class="active">Home</button>
+        <button onclick="showSection('dashboard')">Dashboard</button>
+        <button onclick="showSection('virtual-lab')">Virtual Lab</button>
+        <button onclick="showSection('ai-insights')">AI Insights</button>
+    </div>
+    
+    <div id="test-results" class="test-result">
+        <strong>Test Results:</strong> <span id="status">Ready to test navigation</span>
+    </div>
+    
+    <section id="home" class="active">
+        <h2>Home Section</h2>
+        <p>This is the home section. Navigation is working!</p>
+    </section>
+    
+    <section id="dashboard">
+        <h2>Dashboard Section</h2>
+        <p>This is the dashboard section. If you can see this, navigation is working!</p>
+    </section>
+    
+    <section id="virtual-lab">
+        <h2>Virtual Lab Section</h2>
+        <p>This is the virtual lab section. Navigation is working!</p>
+    </section>
+    
+    <section id="ai-insights">
+        <h2>AI Insights Section</h2>
+        <p>This is the AI insights section. Navigation is working!</p>
+    </section>
+
+    <script>
+        function showSection(sectionName) {
+            console.log('Switching to section:', sectionName);
+            
+            // Update status
+            document.getElementById('status').textContent = `Switching to ${sectionName}...`;
+            
+            // Hide all sections
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.nav button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Add active class to clicked button
+                event.target.classList.add('active');
+                
+                // Update status
+                document.getElementById('status').textContent = `Successfully switched to ${sectionName}!`;
+                
+                console.log('Section switched successfully to:', sectionName);
+            } else {
+                document.getElementById('status').textContent = `Error: Section ${sectionName} not found!`;
+                console.error('Section not found:', sectionName);
+            }
+        }
+        
+        // Test on page load
+        window.addEventListener('load', () => {
+            console.log('Navigation test page loaded');
+            document.getElementById('status').textContent = 'Page loaded. Click navigation buttons to test.';
+        });
+    </script>
+</body>
+</html>

@@ -54,21 +54,23 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: #ffffff;
     overflow-x: hidden;
+    transition: all 0.3s ease;
 }
 
 /* Navigation */
 .navbar {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     padding: 1rem 0;
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
     transition: var(--transition);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* Navbar scroll effect */
@@ -250,6 +252,18 @@ section {
     opacity: 1;
     transform: translateY(0);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .section {
@@ -302,7 +316,7 @@ html {
 
 /* Hero Section */
 .hero-section {
-    background: var(--gradient-primary);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     display: flex;
     align-items: center;
@@ -395,11 +409,13 @@ html {
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
 }
 
 .cta-button.primary {
@@ -410,7 +426,8 @@ html {
 
 .cta-button.primary:hover {
     transform: translateY(-3px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    background: #f8f9fa;
 }
 
 .cta-button.secondary {
@@ -606,8 +623,9 @@ html {
 
 /* Dashboard Section */
 .dashboard-section {
-    background: white;
+    background: #ffffff;
     min-height: 100vh;
+    padding: 2rem 0;
 }
 
 .dashboard-grid {
@@ -629,11 +647,16 @@ html {
     background: white;
     padding: 2rem;
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-    transition: var(--transition);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .metric-card::before {
@@ -1316,8 +1339,9 @@ html {
 
 /* AI Insights Section */
 .ai-insights-section {
-    background: white;
+    background: #ffffff;
     min-height: 100vh;
+    padding: 2rem 0;
 }
 
 .insights-grid {
@@ -1886,8 +1910,153 @@ html {
 
 /* Technology Section */
 .technology-section {
-    background: white;
+    background: #ffffff;
     min-height: 100vh;
+    padding: 2rem 0;
+}
+
+/* Virtual Lab Styles */
+.virtual-lab-placeholder {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    min-height: 400px;
+    position: relative;
+    overflow: hidden;
+}
+
+.lab-environment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.equipment-3d {
+    display: flex;
+    gap: 2rem;
+    flex: 1;
+}
+
+.cnc-machine, .robotic-arm, .conveyor-belt {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.cnc-machine:hover, .robotic-arm:hover, .conveyor-belt:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.machine-base, .arm-base, .belt {
+    width: 60px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.machine-arm, .arm-segment, .items {
+    width: 40px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    margin-left: 10px;
+}
+
+.arm-gripper {
+    width: 20px;
+    height: 15px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 2px;
+    margin-left: 20px;
+}
+
+.status-indicator {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.active {
+    background: #10b981;
+}
+
+.status-indicator.warning {
+    background: #f59e0b;
+}
+
+.status-indicator.critical {
+    background: #ef4444;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.animated .machine-arm {
+    animation: rotate 2s linear infinite;
+}
+
+.animated .arm-segment {
+    animation: move 3s ease-in-out infinite;
+}
+
+.animated .belt {
+    animation: move 1s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes move {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(10px); }
+}
+
+.lab-controls {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.control-panel h4 {
+    color: white;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.control-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
 }
 
 .tech-grid {

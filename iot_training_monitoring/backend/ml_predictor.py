@@ -41,7 +41,12 @@ class MLPredictor:
             
             # Train Random Forest for failure prediction
             X = sensor_df[features].fillna(0)
-            y = sensor_df['failure_risk']
+            y = sensor_df['failure_risk'].fillna(0)  # Fill NaN values in target variable
+            
+            # Remove rows where target is still NaN after filling
+            valid_indices = ~y.isna()
+            X = X[valid_indices]
+            y = y[valid_indices]
             
             if len(X) > 10:  # Need minimum data for training
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

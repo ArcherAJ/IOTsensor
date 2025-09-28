@@ -80,7 +80,9 @@ class IoTLabMonitor {
         // Chart period buttons
         document.querySelectorAll('.chart-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const period = e.target.getAttribute('data-period');
+                console.log('Chart period button clicked:', period);
                 this.updateChartPeriod(period);
             });
         });
@@ -88,6 +90,8 @@ class IoTLabMonitor {
         // Equipment action buttons
         document.querySelectorAll('.action-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Equipment action button clicked:', e.target);
                 this.handleEquipmentAction(e.target);
             });
         });
@@ -227,6 +231,8 @@ class IoTLabMonitor {
     }
 
     async initializeDashboard() {
+        console.log('Initializing dashboard...');
+        
         // Load Chart.js if not already loaded
         if (typeof Chart === 'undefined') {
             window.loadChartJS();
@@ -234,15 +240,21 @@ class IoTLabMonitor {
         }
         
         await this.updateDashboardMetrics();
+        
+        // Always create charts - they will use real data if available, demo data otherwise
+        console.log('Creating charts...');
         this.createPerformanceChart();
         this.createEnergyChart();
         this.createStatusChart();
         this.createMaintenanceChart();
         this.createTemperatureChart();
         this.createEfficiencyChart();
+        
         await this.loadEquipmentData();
         this.setupEquipmentModal();
         this.setupChartInteractions();
+        
+        console.log('Dashboard initialization complete');
     }
 
     async waitForChartJS() {
@@ -259,6 +271,8 @@ class IoTLabMonitor {
     }
 
     async initializeVirtualLab() {
+        console.log('Initializing virtual lab...');
+        
         // Load Three.js and virtual lab if not already loaded
         if (typeof THREE === 'undefined') {
             window.loadThreeJS();
@@ -266,13 +280,57 @@ class IoTLabMonitor {
             await this.waitForThreeJS();
         }
         
-        if (typeof VirtualLab3D !== 'undefined') {
-            this.virtualLab = new VirtualLab3D();
-            await this.virtualLab.initialize();
-        }
+        // Initialize virtual lab environment
+        this.initializeVirtualEnvironment();
+        
         await this.loadVirtualEnvironments();
         this.setupVirtualLabControls();
         this.setupTrainingSimulator();
+        
+        console.log('Virtual lab initialization complete');
+    }
+
+    initializeVirtualEnvironment() {
+        console.log('Setting up virtual environment...');
+        
+        // Create a simple 3D scene placeholder
+        const viewport = document.getElementById('virtualViewport');
+        if (viewport) {
+            viewport.innerHTML = `
+                <div class="virtual-lab-placeholder">
+                    <div class="lab-environment">
+                        <div class="equipment-3d">
+                            <div class="cnc-machine">
+                                <div class="machine-base"></div>
+                                <div class="machine-arm"></div>
+                                <div class="status-indicator active"></div>
+                            </div>
+                            <div class="robotic-arm">
+                                <div class="arm-base"></div>
+                                <div class="arm-segment"></div>
+                                <div class="arm-gripper"></div>
+                                <div class="status-indicator active"></div>
+                            </div>
+                            <div class="conveyor-belt">
+                                <div class="belt"></div>
+                                <div class="items"></div>
+                                <div class="status-indicator warning"></div>
+                            </div>
+                        </div>
+                        <div class="lab-controls">
+                            <div class="control-panel">
+                                <h4>Lab Controls</h4>
+                                <div class="control-buttons">
+                                    <button class="control-btn" data-action="start">Start Simulation</button>
+                                    <button class="control-btn" data-action="pause">Pause</button>
+                                    <button class="control-btn" data-action="reset">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
     }
 
     async waitForThreeJS() {
@@ -314,7 +372,7 @@ class IoTLabMonitor {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
             
-            const response = await fetch('/api/overview', {
+            const response = await fetch('http://localhost:8000/api/overview', {
                 signal: controller.signal,
                 headers: {
                     'Cache-Control': 'max-age=30'
@@ -324,6 +382,17 @@ class IoTLabMonitor {
             
             const data = await response.json();
             this.updateOverviewStats(data);
+            
+            // Load equipment data
+            const equipmentResponse = await fetch('http://localhost:8000/api/equipment');
+            if (equipmentResponse.ok) {
+                const equipmentData = await equipmentResponse.json();
+                this.updateEquipmentDisplay(equipmentData);
+            }
+            
+            // Load chart data
+            await this.loadChartData();
+            
         } catch (error) {
             console.error('Error loading initial data:', error);
             // Use demo data if API fails
@@ -333,6 +402,45 @@ class IoTLabMonitor {
                 maintenance_alerts: 3,
                 uptime_percentage: 94.5
             });
+        }
+    }
+
+    async loadChartData() {
+        try {
+            // Load all chart data in parallel
+            const chartEndpoints = [
+                'http://localhost:8000/api/chart-data/performance',
+                'http://localhost:8000/api/chart-data/energy',
+                'http://localhost:8000/api/chart-data/status',
+                'http://localhost:8000/api/chart-data/maintenance',
+                'http://localhost:8000/api/chart-data/temperature',
+                'http://localhost:8000/api/chart-data/efficiency'
+            ];
+
+            const responses = await Promise.all(
+                chartEndpoints.map(endpoint => fetch(endpoint))
+            );
+
+            const chartData = await Promise.all(
+                responses.map(response => response.json())
+            );
+
+            // Store chart data for later use
+            this.chartData = {
+                performance: chartData[0],
+                energy: chartData[1],
+                status: chartData[2],
+                maintenance: chartData[3],
+                temperature: chartData[4],
+                efficiency: chartData[5]
+            };
+
+            console.log('Chart data loaded successfully:', this.chartData);
+
+        } catch (error) {
+            console.error('Error loading chart data:', error);
+            // Use demo data as fallback
+            this.chartData = null;
         }
     }
 
@@ -396,11 +504,27 @@ class IoTLabMonitor {
     }
 
     updateOverviewStats(data) {
+        console.log('Updating overview stats with data:', data);
+        
         // Update metric cards with animation
-        this.animateCounter('total-equipment', data.total_equipment);
-        this.animateCounter('active-equipment', data.active_equipment);
-        this.animateCounter('maintenance-alerts', data.maintenance_alerts);
-        this.animateCounter('uptime-percentage', data.uptime_percentage, '%');
+        this.animateCounter('total-equipment', data.total_equipment || 0);
+        this.animateCounter('active-equipment', data.active_equipment || 0);
+        this.animateCounter('maintenance-alerts', data.maintenance_alerts || 0);
+        this.animateCounter('uptime-percentage', data.uptime_percentage || 0, '%');
+        
+        // Update additional stats if available
+        if (data.total_usage_hours) {
+            this.animateCounter('total-usage', data.total_usage_hours, 'h');
+        }
+        if (data.total_energy_consumption) {
+            this.animateCounter('total-energy', data.total_energy_consumption, 'kWh');
+        }
+        if (data.total_cost) {
+            this.animateCounter('total-cost', data.total_cost, '$');
+        }
+        if (data.safety_incidents) {
+            this.animateCounter('safety-incidents', data.safety_incidents);
+        }
     }
 
     animateCounter(elementId, targetValue, suffix = '') {
@@ -435,9 +559,15 @@ class IoTLabMonitor {
 
     createPerformanceChart() {
         const ctx = document.getElementById('performanceChart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.log('Performance chart canvas not found');
+            return;
+        }
 
-        const data = {
+        console.log('Creating performance chart...');
+
+        // Use real data if available, otherwise fallback to demo data
+        const chartData = this.chartData?.performance || {
             labels: this.generateTimeLabels(24),
             datasets: [{
                 label: 'Efficiency',
@@ -461,7 +591,7 @@ class IoTLabMonitor {
 
         this.charts.performance = new Chart(ctx, {
             type: 'line',
-            data: data,
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -499,9 +629,15 @@ class IoTLabMonitor {
 
     createEnergyChart() {
         const ctx = document.getElementById('energyChart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.log('Energy chart canvas not found');
+            return;
+        }
 
-        const data = {
+        console.log('Creating energy chart...');
+
+        // Use real data if available, otherwise fallback to demo data
+        const chartData = this.chartData?.energy || {
             labels: this.generateTimeLabels(24),
             datasets: [{
                 label: 'Power Consumption',
@@ -516,7 +652,7 @@ class IoTLabMonitor {
 
         this.charts.energy = new Chart(ctx, {
             type: 'bar',
-            data: data,
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -724,6 +860,7 @@ class IoTLabMonitor {
     }
 
     updateChartPeriod(period) {
+        console.log('Updating chart period to:', period);
         // Update chart buttons
         document.querySelectorAll('.chart-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -736,7 +873,7 @@ class IoTLabMonitor {
 
     async loadChartData(period) {
         try {
-            const response = await fetch(`/api/charts/${period}`);
+            const response = await fetch(`http://localhost:8000/api/charts/${period}`);
             const data = await response.json();
             
             // Update charts with new data
@@ -755,12 +892,26 @@ class IoTLabMonitor {
     }
 
     handleEquipmentAction(button) {
-        const action = button.querySelector('i').className;
+        console.log('Handling equipment action:', button);
+        
+        const action = button.getAttribute('data-action');
+        const equipmentId = button.getAttribute('data-equipment-id');
         const equipmentCard = button.closest('.equipment-card');
-        const equipmentName = equipmentCard.querySelector('h4').textContent;
+        const equipmentName = equipmentCard ? equipmentCard.querySelector('h4').textContent : 'Unknown Equipment';
+        
+        console.log('Action:', action, 'Equipment ID:', equipmentId, 'Name:', equipmentName);
         
         // Show action feedback
         this.showActionFeedback(equipmentName, action);
+        
+        // Handle specific actions
+        if (action === 'view') {
+            this.showEquipmentModal(equipmentId);
+        } else if (action === 'maintenance') {
+            this.scheduleMaintenance(equipmentId);
+        } else if (action === 'settings') {
+            this.showEquipmentSettings(equipmentId);
+        }
     }
 
     showActionFeedback(equipmentName, action) {
@@ -1110,6 +1261,8 @@ class IoTLabMonitor {
     }
 
     updateEquipmentDisplay(equipment) {
+        console.log('Updating equipment display with data:', equipment);
+        
         const container = document.querySelector('.equipment-grid');
         if (!container) return;
 
@@ -1129,8 +1282,8 @@ class IoTLabMonitor {
                         <span class="value">${eq.location}</span>
                     </div>
                     <div class="metric">
-                        <span class="label">Power:</span>
-                        <span class="value">${eq.power_rating}</span>
+                        <span class="label">Efficiency:</span>
+                        <span class="value">${eq.efficiency || 0}%</span>
                     </div>
                 </div>
                 <div class="equipment-actions">
@@ -1185,9 +1338,15 @@ class IoTLabMonitor {
     // New chart creation methods
     createStatusChart() {
         const ctx = document.getElementById('statusChart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.log('Status chart canvas not found');
+            return;
+        }
 
-        const data = {
+        console.log('Creating status chart...');
+
+        // Use real data if available, otherwise fallback to demo data
+        const chartData = this.chartData?.status || {
             labels: ['Active', 'Maintenance', 'Idle', 'Offline'],
             datasets: [{
                 data: [18, 3, 2, 2],
@@ -1203,7 +1362,7 @@ class IoTLabMonitor {
 
         this.charts.status = new Chart(ctx, {
             type: 'doughnut',
-            data: data,
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -1218,9 +1377,15 @@ class IoTLabMonitor {
 
     createMaintenanceChart() {
         const ctx = document.getElementById('maintenanceChart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.log('Maintenance chart canvas not found');
+            return;
+        }
 
-        const data = {
+        console.log('Creating maintenance chart...');
+
+        // Use real data if available, otherwise fallback to demo data
+        const chartData = this.chartData?.maintenance || {
             labels: ['This Week', 'Next Week', 'This Month', 'Next Month'],
             datasets: [{
                 label: 'Maintenance Tasks',
@@ -1234,7 +1399,7 @@ class IoTLabMonitor {
 
         this.charts.maintenance = new Chart(ctx, {
             type: 'bar',
-            data: data,
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -1249,9 +1414,15 @@ class IoTLabMonitor {
 
     createTemperatureChart() {
         const ctx = document.getElementById('temperatureChart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.log('Temperature chart canvas not found');
+            return;
+        }
 
-        const data = {
+        console.log('Creating temperature chart...');
+
+        // Use real data if available, otherwise fallback to demo data
+        const chartData = this.chartData?.temperature || {
             labels: this.generateTimeLabels(12),
             datasets: [{
                 label: 'CNC Machines',
@@ -1270,7 +1441,7 @@ class IoTLabMonitor {
 
         this.charts.temperature = new Chart(ctx, {
             type: 'line',
-            data: data,
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -1289,9 +1460,15 @@ class IoTLabMonitor {
 
     createEfficiencyChart() {
         const ctx = document.getElementById('efficiencyChart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.log('Efficiency chart canvas not found');
+            return;
+        }
 
-        const data = {
+        console.log('Creating efficiency chart...');
+
+        // Use real data if available, otherwise fallback to demo data
+        const chartData = this.chartData?.efficiency || {
             labels: ['CNC #1', 'CNC #2', 'Robot #1', 'Robot #2', '3D Printer #1', 'Laser #1'],
             datasets: [{
                 label: 'Efficiency (%)',
@@ -1311,7 +1488,7 @@ class IoTLabMonitor {
 
         this.charts.efficiency = new Chart(ctx, {
             type: 'bar',
-            data: data,
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -1441,13 +1618,26 @@ class IoTLabMonitor {
     }
 
     showEquipmentModal(equipmentId) {
-        const modal = document.getElementById('equipmentModal');
-        const equipment = this.equipmentData.find(eq => eq.id == equipmentId);
+        console.log('Showing equipment modal for ID:', equipmentId);
         
-        if (!equipment) return;
+        const modal = document.getElementById('equipmentModal');
+        if (!modal) {
+            console.log('Equipment modal not found');
+            return;
+        }
+        
+        const equipment = this.equipmentData ? this.equipmentData.find(eq => eq.id == equipmentId) : null;
+        
+        if (!equipment) {
+            console.log('Equipment not found for ID:', equipmentId);
+            return;
+        }
 
         // Update modal title
-        document.getElementById('modalTitle').textContent = equipment.name;
+        const modalTitle = document.getElementById('modalTitle');
+        if (modalTitle) {
+            modalTitle.textContent = equipment.name;
+        }
 
         // Update status metrics
         this.updateStatusMetrics(equipment);
@@ -1459,6 +1649,18 @@ class IoTLabMonitor {
         this.createEquipmentDetailChart(equipmentId);
 
         modal.classList.add('active');
+    }
+
+    scheduleMaintenance(equipmentId) {
+        console.log('Scheduling maintenance for equipment:', equipmentId);
+        // Show maintenance scheduling modal or form
+        alert(`Maintenance scheduled for Equipment ID: ${equipmentId}`);
+    }
+
+    showEquipmentSettings(equipmentId) {
+        console.log('Showing settings for equipment:', equipmentId);
+        // Show equipment settings modal
+        alert(`Settings for Equipment ID: ${equipmentId}`);
     }
 
     updateStatusMetrics(equipment) {
@@ -1621,6 +1823,8 @@ class IoTLabMonitor {
 
     // Virtual Lab Controls
     setupVirtualLabControls() {
+        console.log('Setting up virtual lab controls...');
+        
         // Simulation controls
         document.getElementById('startSimulation')?.addEventListener('click', () => {
             this.startSimulation();
@@ -1636,6 +1840,15 @@ class IoTLabMonitor {
         
         document.getElementById('resetSimulation')?.addEventListener('click', () => {
             this.resetSimulation();
+        });
+
+        // Control panel buttons
+        document.querySelectorAll('.control-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const action = e.target.getAttribute('data-action');
+                console.log('Virtual lab control clicked:', action);
+                this.handleVirtualLabAction(action);
+            });
         });
 
         // Simulation speed control
@@ -1658,13 +1871,50 @@ class IoTLabMonitor {
         });
     }
 
+    handleVirtualLabAction(action) {
+        console.log('Handling virtual lab action:', action);
+        
+        switch(action) {
+            case 'start':
+                this.startSimulation();
+                break;
+            case 'pause':
+                this.pauseSimulation();
+                break;
+            case 'reset':
+                this.resetSimulation();
+                break;
+            default:
+                console.log('Unknown virtual lab action:', action);
+        }
+    }
+
     startSimulation() {
         console.log('Starting simulation...');
         this.showActionFeedback('Virtual Lab', 'Simulation started');
+        
         // Update HUD
-        document.getElementById('hudActiveCount').textContent = '8';
-        document.getElementById('hudTemperature').textContent = '24°C';
-        document.getElementById('hudSafety').textContent = 'All Clear';
+        const hudActiveCount = document.getElementById('hudActiveCount');
+        const hudTemperature = document.getElementById('hudTemperature');
+        
+        if (hudActiveCount) hudActiveCount.textContent = '8';
+        if (hudTemperature) hudTemperature.textContent = '24°C';
+        
+        // Animate equipment
+        this.animateEquipment();
+        
+        const hudSafety = document.getElementById('hudSafety');
+        if (hudSafety) hudSafety.textContent = 'All Clear';
+    }
+
+    animateEquipment() {
+        console.log('Animating equipment...');
+        
+        // Add animation classes to equipment
+        const equipment = document.querySelectorAll('.cnc-machine, .robotic-arm, .conveyor-belt');
+        equipment.forEach(eq => {
+            eq.classList.add('animated');
+        });
     }
 
     pauseSimulation() {

@@ -99,6 +99,173 @@ async def get_overview():
     set_cached_data(cache_key, stats)
     return stats
 
+@app.get("/api/chart-data/performance")
+async def get_performance_chart_data():
+    """Get performance chart data"""
+    sensor_df = db.get_sensor_data()
+    if sensor_df.empty:
+        return {"labels": [], "datasets": []}
+    
+    # Group by equipment and get latest efficiency
+    latest_data = sensor_df.groupby('equipment_id').last().reset_index()
+    equipment_df = db.get_equipment()
+    
+    labels = []
+    efficiency_data = []
+    
+    for _, row in latest_data.iterrows():
+        equipment = equipment_df[equipment_df['id'] == row['equipment_id']]
+        if not equipment.empty:
+            labels.append(equipment.iloc[0]['name'])
+            efficiency_data.append(row['efficiency'])
+    
+    return {
+        "labels": labels,
+        "datasets": [{
+            "label": "Efficiency (%)",
+            "data": efficiency_data,
+            "backgroundColor": "rgba(102, 126, 234, 0.8)",
+            "borderColor": "rgba(102, 126, 234, 1)",
+            "borderWidth": 2
+        }]
+    }
+
+@app.get("/api/chart-data/energy")
+async def get_energy_chart_data():
+    """Get energy consumption chart data"""
+    usage_df = db.get_usage_data()
+    if usage_df.empty:
+        return {"labels": [], "datasets": []}
+    
+    # Get last 7 days of data
+    latest_dates = usage_df['date'].unique()[-7:]
+    daily_energy = []
+    
+    for date in latest_dates:
+        day_data = usage_df[usage_df['date'] == date]
+        total_energy = day_data['energy_consumption'].sum()
+        daily_energy.append(total_energy)
+    
+    return {
+        "labels": latest_dates.tolist(),
+        "datasets": [{
+            "label": "Energy Consumption (kWh)",
+            "data": daily_energy,
+            "backgroundColor": "rgba(16, 185, 129, 0.8)",
+            "borderColor": "rgba(16, 185, 129, 1)",
+            "borderWidth": 2,
+            "fill": True
+        }]
+    }
+
+@app.get("/api/chart-data/status")
+async def get_status_chart_data():
+    """Get equipment status distribution"""
+    equipment_df = db.get_equipment()
+    if equipment_df.empty:
+        return {"labels": [], "datasets": []}
+    
+    status_counts = equipment_df['status'].value_counts()
+    
+    return {
+        "labels": status_counts.index.tolist(),
+        "datasets": [{
+            "data": status_counts.values.tolist(),
+            "backgroundColor": [
+                "#10b981",  # Active - green
+                "#f59e0b",  # Maintenance - yellow
+                "#6b7280",  # Idle - gray
+                "#ef4444"   # Critical - red
+            ],
+            "borderWidth": 0
+        }]
+    }
+
+@app.get("/api/chart-data/maintenance")
+async def get_maintenance_chart_data():
+    """Get maintenance schedule chart data"""
+    equipment_df = db.get_equipment()
+    if equipment_df.empty:
+        return {"labels": [], "datasets": []}
+    
+    from datetime import datetime, timedelta
+    
+    # Categorize by days until maintenance
+    upcoming = 0
+    overdue = 0
+    
+    for _, equipment in equipment_df.iterrows():
+        due_date = datetime.strptime(equipment['next_maintenance'], '%Y-%m-%d')
+        days_until = (due_date - datetime.now()).days
+        
+        if days_until < 0:
+            overdue += 1
+        elif days_until <= 30:
+            upcoming += 1
+    
+    return {
+        "labels": ["Upcoming (30 days)", "Overdue"],
+        "datasets": [{
+            "data": [upcoming, overdue],
+            "backgroundColor": ["#f59e0b", "#ef4444"],
+            "borderWidth": 0
+        }]
+    }
+
+@app.get("/api/chart-data/temperature")
+async def get_temperature_chart_data():
+    """Get temperature trends chart data"""
+    sensor_df = db.get_sensor_data()
+    if sensor_df.empty:
+        return {"labels": [], "datasets": []}
+    
+    # Get latest 10 readings
+    latest_readings = sensor_df.tail(10)
+    
+    return {
+        "labels": [f"Reading {i+1}" for i in range(len(latest_readings))],
+        "datasets": [{
+            "label": "Temperature (°C)",
+            "data": latest_readings['temperature'].tolist(),
+            "backgroundColor": "rgba(239, 68, 68, 0.8)",
+            "borderColor": "rgba(239, 68, 68, 1)",
+            "borderWidth": 2,
+            "fill": True
+        }]
+    }
+
+@app.get("/api/chart-data/efficiency")
+async def get_efficiency_chart_data():
+    """Get efficiency vs usage chart data"""
+    sensor_df = db.get_sensor_data()
+    if sensor_df.empty:
+        return {"labels": [], "datasets": []}
+    
+    # Get latest readings for each equipment
+    latest_data = sensor_df.groupby('equipment_id').last().reset_index()
+    
+    return {
+        "labels": [f"Equipment {row['equipment_id']}" for _, row in latest_data.iterrows()],
+        "datasets": [
+            {
+                "label": "Efficiency (%)",
+                "data": latest_data['efficiency'].tolist(),
+                "backgroundColor": "rgba(102, 126, 234, 0.8)",
+                "borderColor": "rgba(102, 126, 234, 1)",
+                "borderWidth": 2,
+                "yAxisID": "y"
+            },
+            {
+                "label": "Usage Hours",
+                "data": latest_data['usage_hours'].tolist(),
+                "backgroundColor": "rgba(16, 185, 129, 0.8)",
+                "borderColor": "rgba(16, 185, 129, 1)",
+                "borderWidth": 2,
+                "yAxisID": "y1"
+            }
+        ]
+    }
+
 @app.get("/api/alerts")
 async def get_alerts():
     return data_processor.get_alerts()

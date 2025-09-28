@@ -29,8 +29,9 @@ class IoTLabMonitor {
         this.setupEventListeners();
         this.initializeCriticalFeatures();
         
-        // Ensure home section is active by default
-        this.showSection('home');
+        // Initialize scroll progress and active section
+        this.updateScrollProgress();
+        this.updateActiveSection();
     }
 
     initializeCriticalFeatures() {
@@ -48,13 +49,18 @@ class IoTLabMonitor {
     }
 
     setupEventListeners() {
-        // Navigation
+        // Navigation - Smooth scrolling
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const section = link.getAttribute('data-section');
-                this.showSection(section);
+                const targetId = link.getAttribute('href').substring(1);
+                this.scrollToSection(targetId);
             });
+        });
+
+        // Scroll event listeners
+        window.addEventListener('scroll', () => {
+            this.handleScroll();
         });
 
         // Notification button
@@ -115,71 +121,73 @@ class IoTLabMonitor {
         });
     }
 
-    showSection(sectionName) {
-        console.log('Switching to section:', sectionName);
-        
-        // Prevent multiple rapid clicks
-        if (this.isTransitioning) return;
-        this.isTransitioning = true;
-        
-        // Use requestAnimationFrame for smoother transitions
-        requestAnimationFrame(() => {
-            // Hide all sections with optimized performance
-            const sections = document.querySelectorAll('section');
-            const navLinks = document.querySelectorAll('.nav-link');
-            
-            // Batch DOM updates
-            sections.forEach(section => {
-                if (section.classList.contains('active')) {
-                    section.classList.remove('active');
-                }
+    scrollToSection(sectionId) {
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
             });
             
-            navLinks.forEach(link => {
-                if (link.classList.contains('active')) {
-                    link.classList.remove('active');
-                }
-            });
+            // Initialize section if needed
+            this.initializeSection(sectionId);
+        }
+    }
 
-            // Show selected section
-            const targetSection = document.getElementById(sectionName);
-            if (targetSection) {
-                // Add active class immediately for instant visual feedback
-                targetSection.classList.add('active');
-                this.currentSection = sectionName;
-                
-                // Update navigation
-                const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
-                if (activeLink) {
-                    activeLink.classList.add('active');
-                }
+    handleScroll() {
+        this.updateScrollProgress();
+        this.updateActiveSection();
+        this.updateNavbarState();
+    }
 
-                // Show loading indicator for sections that might take time
-                if (['dashboard', 'virtual-lab', 'ai-insights'].includes(sectionName)) {
-                    this.showLoadingIndicator();
-                }
+    updateScrollProgress() {
+        const scrollProgressBar = document.getElementById('scrollProgressBar');
+        if (!scrollProgressBar) return;
 
-                // Initialize section-specific features asynchronously
-                requestAnimationFrame(() => {
-                    this.initializeSection(sectionName);
-                    this.hideLoadingIndicator();
-                });
-                
-                // Smooth scroll to top
-                window.scrollTo({ 
-                    top: 0, 
-                    behavior: 'smooth' 
-                });
-                
-                // Reset transition flag after animation completes
-                setTimeout(() => {
-                    this.isTransitioning = false;
-                }, 400);
-            } else {
-                console.error('Section not found:', sectionName);
-                this.isTransitioning = false;
+        const scrollTop = window.pageYOffset;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        
+        scrollProgressBar.style.width = scrollPercent + '%';
+    }
+
+    updateActiveSection() {
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        let currentSection = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.offsetHeight;
+            
+            if (window.pageYOffset >= sectionTop && 
+                window.pageYOffset < sectionTop + sectionHeight) {
+                currentSection = section.id;
             }
         });
+        
+        // Update navigation active state
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${currentSection}`) {
+                link.classList.add('active');
+            }
+        });
+        
+        this.currentSection = currentSection;
+    }
+
+    updateNavbarState() {
+        const navbar = document.getElementById('navbar');
+        if (!navbar) return;
+
+        if (window.pageYOffset > 100) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
     }
 
     showLoadingIndicator() {
@@ -228,7 +236,13 @@ class IoTLabMonitor {
         await this.updateDashboardMetrics();
         this.createPerformanceChart();
         this.createEnergyChart();
+        this.createStatusChart();
+        this.createMaintenanceChart();
+        this.createTemperatureChart();
+        this.createEfficiencyChart();
         await this.loadEquipmentData();
+        this.setupEquipmentModal();
+        this.setupChartInteractions();
     }
 
     async waitForChartJS() {
@@ -257,6 +271,8 @@ class IoTLabMonitor {
             await this.virtualLab.initialize();
         }
         await this.loadVirtualEnvironments();
+        this.setupVirtualLabControls();
+        this.setupTrainingSimulator();
     }
 
     async waitForThreeJS() {
@@ -275,12 +291,16 @@ class IoTLabMonitor {
     async initializeAIInsights() {
         await this.loadAIInsights();
         this.createPredictiveChart();
+        this.createAnomalyChart();
+        this.createHealthScoreChart();
+        this.setupAIChat();
     }
 
     async initializeGamification() {
         await this.loadLeaderboard();
         await this.loadUserStats();
         await this.loadChallenges();
+        this.setupGamificationInteractions();
     }
 
     async initializeTechnology() {
@@ -1093,8 +1113,8 @@ class IoTLabMonitor {
         const container = document.querySelector('.equipment-grid');
         if (!container) return;
 
-        container.innerHTML = equipment.slice(0, 6).map(eq => `
-            <div class="equipment-card">
+        container.innerHTML = equipment.slice(0, 12).map(eq => `
+            <div class="equipment-card" data-equipment-id="${eq.id}">
                 <div class="equipment-header">
                     <h4>${eq.name}</h4>
                     <span class="status-badge ${eq.status}">${eq.status}</span>
@@ -1109,17 +1129,43 @@ class IoTLabMonitor {
                         <span class="value">${eq.location}</span>
                     </div>
                     <div class="metric">
-                        <span class="label">Status:</span>
-                        <span class="value">${eq.status}</span>
+                        <span class="label">Power:</span>
+                        <span class="value">${eq.power_rating}</span>
                     </div>
                 </div>
                 <div class="equipment-actions">
-                    <button class="action-btn"><i class="fas fa-eye"></i></button>
-                    <button class="action-btn"><i class="fas fa-cog"></i></button>
-                    <button class="action-btn"><i class="fas fa-chart-bar"></i></button>
+                    <button class="action-btn" data-action="view" data-equipment-id="${eq.id}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn" data-action="settings" data-equipment-id="${eq.id}">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="action-btn" data-action="analytics" data-equipment-id="${eq.id}">
+                        <i class="fas fa-chart-bar"></i>
+                    </button>
                 </div>
             </div>
         `).join('');
+
+        // Add click handlers for equipment cards
+        container.querySelectorAll('.equipment-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('.action-btn')) {
+                    const equipmentId = card.getAttribute('data-equipment-id');
+                    this.showEquipmentModal(equipmentId);
+                }
+            });
+        });
+
+        // Add action button handlers
+        container.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const action = btn.getAttribute('data-action');
+                const equipmentId = btn.getAttribute('data-equipment-id');
+                this.handleEquipmentAction(action, equipmentId);
+            });
+        });
     }
 
     async updateDashboardMetrics(data = null) {
@@ -1135,6 +1181,686 @@ class IoTLabMonitor {
 
         this.updateOverviewStats(data);
     }
+
+    // New chart creation methods
+    createStatusChart() {
+        const ctx = document.getElementById('statusChart');
+        if (!ctx) return;
+
+        const data = {
+            labels: ['Active', 'Maintenance', 'Idle', 'Offline'],
+            datasets: [{
+                data: [18, 3, 2, 2],
+                backgroundColor: [
+                    '#10b981',
+                    '#f59e0b',
+                    '#6b7280',
+                    '#ef4444'
+                ],
+                borderWidth: 0
+            }]
+        };
+
+        this.charts.status = new Chart(ctx, {
+            type: 'doughnut',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    createMaintenanceChart() {
+        const ctx = document.getElementById('maintenanceChart');
+        if (!ctx) return;
+
+        const data = {
+            labels: ['This Week', 'Next Week', 'This Month', 'Next Month'],
+            datasets: [{
+                label: 'Maintenance Tasks',
+                data: [5, 8, 15, 12],
+                backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                borderColor: '#ef4444',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        };
+
+        this.charts.maintenance = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    createTemperatureChart() {
+        const ctx = document.getElementById('temperatureChart');
+        if (!ctx) return;
+
+        const data = {
+            labels: this.generateTimeLabels(12),
+            datasets: [{
+                label: 'CNC Machines',
+                data: this.generateRandomData(12, 40, 70),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Robots',
+                data: this.generateRandomData(12, 35, 50),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4
+            }]
+        };
+
+        this.charts.temperature = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    createEfficiencyChart() {
+        const ctx = document.getElementById('efficiencyChart');
+        if (!ctx) return;
+
+        const data = {
+            labels: ['CNC #1', 'CNC #2', 'Robot #1', 'Robot #2', '3D Printer #1', 'Laser #1'],
+            datasets: [{
+                label: 'Efficiency (%)',
+                data: [92, 89, 95, 94, 88, 91],
+                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                borderColor: '#10b981',
+                borderWidth: 2
+            }, {
+                label: 'Usage Hours',
+                data: [6.5, 7.2, 5.8, 6.1, 4.2, 5.5],
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderColor: '#3b82f6',
+                borderWidth: 2,
+                yAxisID: 'y1'
+            }]
+        };
+
+        this.charts.efficiency = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Efficiency (%)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Usage Hours'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+    }
+
+    createAnomalyChart() {
+        const ctx = document.getElementById('anomalyChart');
+        if (!ctx) return;
+
+        const data = {
+            labels: ['CNC #1', 'CNC #2', 'Robot #1', 'Robot #2', '3D Printer #1', '3D Printer #2', 'Laser #1', 'Laser #2'],
+            datasets: [{
+                label: 'Anomaly Score',
+                data: [0.1, 0.8, 0.2, 0.3, 0.1, 0.9, 0.4, 0.2],
+                backgroundColor: function(context) {
+                    const value = context.parsed.y;
+                    if (value > 0.7) return '#ef4444';
+                    if (value > 0.4) return '#f59e0b';
+                    return '#10b981';
+                },
+                borderWidth: 2
+            }]
+        };
+
+        this.charts.anomaly = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        title: {
+                            display: true,
+                            text: 'Anomaly Score'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    createHealthScoreChart() {
+        const ctx = document.getElementById('healthScoreChart');
+        if (!ctx) return;
+
+        const data = {
+            labels: ['CNC #1', 'CNC #2', 'Robot #1', 'Robot #2', '3D Printer #1', '3D Printer #2'],
+            datasets: [{
+                label: 'Health Score',
+                data: [85, 72, 95, 88, 78, 65],
+                backgroundColor: function(context) {
+                    const value = context.parsed.y;
+                    if (value > 80) return '#10b981';
+                    if (value > 60) return '#f59e0b';
+                    return '#ef4444';
+                },
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        };
+
+        this.charts.healthScore = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Health Score (%)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Equipment Modal Methods
+    setupEquipmentModal() {
+        const modal = document.getElementById('equipmentModal');
+        const closeBtn = document.getElementById('modalClose');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+    }
+
+    showEquipmentModal(equipmentId) {
+        const modal = document.getElementById('equipmentModal');
+        const equipment = this.equipmentData.find(eq => eq.id == equipmentId);
+        
+        if (!equipment) return;
+
+        // Update modal title
+        document.getElementById('modalTitle').textContent = equipment.name;
+
+        // Update status metrics
+        this.updateStatusMetrics(equipment);
+
+        // Update maintenance timeline
+        this.updateMaintenanceTimeline(equipmentId);
+
+        // Create equipment detail chart
+        this.createEquipmentDetailChart(equipmentId);
+
+        modal.classList.add('active');
+    }
+
+    updateStatusMetrics(equipment) {
+        const container = document.getElementById('statusMetrics');
+        if (!container) return;
+
+        // Get latest sensor data for this equipment
+        const sensorData = this.getLatestSensorData(equipment.id);
+        
+        container.innerHTML = `
+            <div class="status-metric">
+                <span class="label">Temperature:</span>
+                <span class="value">${sensorData?.temperature || 'N/A'}°C</span>
+            </div>
+            <div class="status-metric">
+                <span class="label">Efficiency:</span>
+                <span class="value">${sensorData?.efficiency || 'N/A'}%</span>
+            </div>
+            <div class="status-metric">
+                <span class="label">Power Consumption:</span>
+                <span class="value">${sensorData?.power_consumption || 'N/A'}kW</span>
+            </div>
+            <div class="status-metric">
+                <span class="label">Usage Hours:</span>
+                <span class="value">${sensorData?.usage_hours || 'N/A'}h</span>
+            </div>
+        `;
+    }
+
+    updateMaintenanceTimeline(equipmentId) {
+        const container = document.getElementById('maintenanceTimeline');
+        if (!container) return;
+
+        // Mock maintenance data
+        const maintenanceData = [
+            { date: '2024-03-01', type: 'Preventive', status: 'completed', description: 'Monthly calibration' },
+            { date: '2024-02-15', type: 'Corrective', status: 'completed', description: 'Bearing replacement' },
+            { date: '2024-04-15', type: 'Preventive', status: 'scheduled', description: 'Quarterly inspection' }
+        ];
+
+        container.innerHTML = maintenanceData.map(item => `
+            <div class="timeline-item ${item.status}">
+                <div class="timeline-date">${item.date}</div>
+                <div class="timeline-content">
+                    <h5>${item.type} Maintenance</h5>
+                    <p>${item.description}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    createEquipmentDetailChart(equipmentId) {
+        const ctx = document.getElementById('equipmentDetailChart');
+        if (!ctx) return;
+
+        const data = {
+            labels: this.generateTimeLabels(24),
+            datasets: [{
+                label: 'Temperature',
+                data: this.generateRandomData(24, 30, 70),
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Efficiency',
+                data: this.generateRandomData(24, 80, 100),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                yAxisID: 'y1'
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Efficiency (%)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+    }
+
+    getLatestSensorData(equipmentId) {
+        // Mock sensor data - in real implementation, this would come from API
+        return {
+            temperature: Math.floor(Math.random() * 40) + 30,
+            efficiency: Math.floor(Math.random() * 20) + 80,
+            power_consumption: (Math.random() * 10 + 5).toFixed(1),
+            usage_hours: (Math.random() * 8 + 2).toFixed(1)
+        };
+    }
+
+    handleEquipmentAction(action, equipmentId) {
+        const equipment = this.equipmentData.find(eq => eq.id == equipmentId);
+        const equipmentName = equipment ? equipment.name : `Equipment ${equipmentId}`;
+
+        switch (action) {
+            case 'view':
+                this.showEquipmentModal(equipmentId);
+                break;
+            case 'settings':
+                this.showActionFeedback(equipmentName, 'Settings opened');
+                break;
+            case 'analytics':
+                this.showActionFeedback(equipmentName, 'Analytics opened');
+                break;
+        }
+    }
+
+    setupChartInteractions() {
+        // Add chart period button handlers
+        document.querySelectorAll('.chart-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const period = e.target.getAttribute('data-period');
+                const type = e.target.getAttribute('data-type');
+                const equipment = e.target.getAttribute('data-equipment');
+                const metric = e.target.getAttribute('data-metric');
+                
+                // Update button states
+                e.target.parentElement.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Update chart data
+                this.updateChartData(period, type, equipment, metric);
+            });
+        });
+    }
+
+    updateChartData(period, type, equipment, metric) {
+        // Update charts based on selected parameters
+        console.log('Updating chart data:', { period, type, equipment, metric });
+        
+        // In a real implementation, this would fetch new data from the API
+        // and update the respective charts
+    }
+
+    // Virtual Lab Controls
+    setupVirtualLabControls() {
+        // Simulation controls
+        document.getElementById('startSimulation')?.addEventListener('click', () => {
+            this.startSimulation();
+        });
+        
+        document.getElementById('pauseSimulation')?.addEventListener('click', () => {
+            this.pauseSimulation();
+        });
+        
+        document.getElementById('stopSimulation')?.addEventListener('click', () => {
+            this.stopSimulation();
+        });
+        
+        document.getElementById('resetSimulation')?.addEventListener('click', () => {
+            this.resetSimulation();
+        });
+
+        // Simulation speed control
+        const speedSlider = document.getElementById('simulationSpeed');
+        const speedValue = document.getElementById('speedValue');
+        
+        if (speedSlider && speedValue) {
+            speedSlider.addEventListener('input', (e) => {
+                speedValue.textContent = e.target.value + 'x';
+                this.setSimulationSpeed(parseFloat(e.target.value));
+            });
+        }
+
+        // Training mode buttons
+        document.querySelectorAll('.training-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = e.target.getAttribute('data-mode');
+                this.selectTrainingMode(mode);
+            });
+        });
+    }
+
+    startSimulation() {
+        console.log('Starting simulation...');
+        this.showActionFeedback('Virtual Lab', 'Simulation started');
+        // Update HUD
+        document.getElementById('hudActiveCount').textContent = '8';
+        document.getElementById('hudTemperature').textContent = '24°C';
+        document.getElementById('hudSafety').textContent = 'All Clear';
+    }
+
+    pauseSimulation() {
+        console.log('Pausing simulation...');
+        this.showActionFeedback('Virtual Lab', 'Simulation paused');
+    }
+
+    stopSimulation() {
+        console.log('Stopping simulation...');
+        this.showActionFeedback('Virtual Lab', 'Simulation stopped');
+        // Reset HUD
+        document.getElementById('hudActiveCount').textContent = '0';
+        document.getElementById('hudTemperature').textContent = '22°C';
+        document.getElementById('hudSafety').textContent = 'All Clear';
+    }
+
+    resetSimulation() {
+        console.log('Resetting simulation...');
+        this.showActionFeedback('Virtual Lab', 'Simulation reset');
+        // Reset HUD
+        document.getElementById('hudActiveCount').textContent = '0';
+        document.getElementById('hudTemperature').textContent = '22°C';
+        document.getElementById('hudSafety').textContent = 'All Clear';
+    }
+
+    setSimulationSpeed(speed) {
+        console.log('Setting simulation speed to:', speed);
+    }
+
+    selectTrainingMode(mode) {
+        console.log('Selected training mode:', mode);
+        
+        // Update button states
+        document.querySelectorAll('.training-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-mode="${mode}"]`)?.classList.add('active');
+        
+        // Update progress
+        const progress = document.getElementById('trainingProgress');
+        const progressText = document.getElementById('progressText');
+        
+        if (progress && progressText) {
+            const newProgress = Math.floor(Math.random() * 100);
+            progress.style.width = newProgress + '%';
+            progressText.textContent = newProgress + '% Complete';
+        }
+        
+        this.showActionFeedback('Training Mode', `${mode} mode selected`);
+    }
+
+    // Training Simulator
+    setupTrainingSimulator() {
+        document.querySelectorAll('.scenario-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const scenario = e.currentTarget.getAttribute('data-scenario');
+                this.selectTrainingScenario(scenario);
+            });
+        });
+    }
+
+    selectTrainingScenario(scenario) {
+        console.log('Selected training scenario:', scenario);
+        
+        // Update card states
+        document.querySelectorAll('.scenario-card').forEach(card => {
+            card.classList.remove('active');
+        });
+        document.querySelector(`[data-scenario="${scenario}"]`)?.classList.add('active');
+        
+        // Update simulator screen
+        const screen = document.getElementById('simulatorScreen');
+        if (screen) {
+            screen.innerHTML = `
+                <div class="simulator-content">
+                    <h3>${scenario.replace('-', ' ').toUpperCase()} Training</h3>
+                    <p>Training scenario loaded successfully!</p>
+                    <div class="training-interface">
+                        <button class="training-action-btn">Start Training</button>
+                        <button class="training-action-btn">View Instructions</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        this.showActionFeedback('Training Simulator', `${scenario} scenario selected`);
+    }
+
+    // AI Chat Setup
+    setupAIChat() {
+        const chatInput = document.getElementById('aiChatInput');
+        const chatSend = document.getElementById('aiChatSend');
+        const chatMessages = document.getElementById('aiChatMessages');
+        const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+
+        if (chatSend) {
+            chatSend.addEventListener('click', () => {
+                this.sendAIMessage();
+            });
+        }
+
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.sendAIMessage();
+                }
+            });
+        }
+
+        suggestionBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const query = e.target.getAttribute('data-query');
+                this.sendAIMessage(query);
+            });
+        });
+    }
+
+    sendAIMessage(message = null) {
+        const chatInput = document.getElementById('aiChatInput');
+        const chatMessages = document.getElementById('aiChatMessages');
+        
+        const userMessage = message || chatInput.value.trim();
+        if (!userMessage) return;
+
+        // Add user message
+        this.addChatMessage(userMessage, 'user');
+        
+        // Clear input
+        if (chatInput) chatInput.value = '';
+        
+        // Generate AI response
+        setTimeout(() => {
+            const aiResponse = this.generateAIResponse(userMessage);
+            this.addChatMessage(aiResponse, 'ai');
+        }, 1000);
+    }
+
+    addChatMessage(message, sender) {
+        const chatMessages = document.getElementById('aiChatMessages');
+        if (!chatMessages) return;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-${sender === 'user' ? 'user' : 'robot'}"></i>
+            </div>
+            <div class="message-content">
+                <p>${message}</p>
+            </div>
+        `;
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    generateAIResponse(userMessage) {
+        const responses = {
+            'high temperature': 'I\'ve detected 3 equipment items with elevated temperatures. CNC Machine #2 shows 68°C, which is above the normal range. I recommend immediate inspection.',
+            'maintenance': 'Based on the current data, I predict that Robot Arm #1 will need maintenance in 15 days. The efficiency trend shows a 5% decline over the past week.',
+            'energy': 'Energy consumption analysis shows a 12% increase this month. The main contributors are the CNC machines in Lab A. Consider optimizing operating schedules.',
+            'default': 'I understand you\'re asking about equipment monitoring. I can help you with temperature analysis, maintenance predictions, energy consumption, and performance insights. What specific aspect would you like to explore?'
+        };
+
+        const lowerMessage = userMessage.toLowerCase();
+        
+        if (lowerMessage.includes('temperature') || lowerMessage.includes('high')) {
+            return responses['high temperature'];
+        } else if (lowerMessage.includes('maintenance') || lowerMessage.includes('predict')) {
+            return responses['maintenance'];
+        } else if (lowerMessage.includes('energy') || lowerMessage.includes('consumption')) {
+            return responses['energy'];
+        } else {
+            return responses['default'];
+        }
+    }
+
+    // Gamification Interactions
+    setupGamificationInteractions() {
+        // Challenge interactions
+        document.querySelectorAll('.challenge-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const challengeTitle = item.querySelector('h4').textContent;
+                this.showActionFeedback('Challenge', `${challengeTitle} selected`);
+            });
+        });
+
+        // Badge interactions
+        document.querySelectorAll('.badge-item').forEach(badge => {
+            badge.addEventListener('click', (e) => {
+                const badgeTitle = badge.querySelector('h4').textContent;
+                this.showActionFeedback('Badge', `${badgeTitle} badge details`);
+            });
+        });
+    }
 }
 
 // Initialize the application
@@ -1143,41 +1869,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Global functions for HTML onclick handlers
-function showSection(sectionName) {
-    console.log('Global showSection called with:', sectionName);
+function scrollToSection(sectionId) {
+    console.log('Global scrollToSection called with:', sectionId);
     
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => showSection(sectionName));
+        document.addEventListener('DOMContentLoaded', () => scrollToSection(sectionId));
         return;
     }
     
     if (window.iotLabMonitor) {
-        window.iotLabMonitor.showSection(sectionName);
+        window.iotLabMonitor.scrollToSection(sectionId);
     } else {
         console.log('iotLabMonitor not initialized yet, using fallback');
-        // Fallback: direct section switching with animation
-        document.querySelectorAll('section').forEach(section => {
-            section.classList.remove('active');
-        });
-        
-        const targetSection = document.getElementById(sectionName);
+        // Fallback: direct scroll to section
+        const targetSection = document.getElementById(sectionId);
         if (targetSection) {
-            targetSection.classList.add('active');
-            
-            // Update navigation
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
+            const offsetTop = targetSection.offsetTop - 80;
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
             });
-            const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            console.error('Section not found:', sectionName);
+            console.error('Section not found:', sectionId);
         }
     }
 }

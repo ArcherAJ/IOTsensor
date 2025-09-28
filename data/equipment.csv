@@ -1,1 +1,26 @@
-id,name,type,status,location,last_maintenance,next_maintenance
+id,name,type,status,location,manufacturer,model,power_rating,capacity,last_maintenance,next_maintenance,warranty_expiry,maintenance_cost,installation_year
+1,CNC Machine #1,CNC,active,Lab A,Haas,TM-1P,15kW,1000x500mm,2024-01-15,2024-04-15,2026-12-31,2500,2021
+2,CNC Machine #2,CNC,active,Lab A,Haas,TM-2P,20kW,1200x600mm,2024-02-10,2024-05-10,2027-06-30,3000,2022
+3,Robot Arm #1,Robotics,active,Lab B,KUKA,KR 6 R900,3.5kW,6kg payload,2024-01-20,2024-04-20,2025-08-15,1800,2020
+4,Robot Arm #2,Robotics,active,Lab B,ABB,IRB 1200,2.5kW,7kg payload,2024-02-05,2024-05-05,2026-03-20,2200,2021
+5,3D Printer #1,Additive Manufacturing,active,Lab C,Ultimaker,S5 Pro,1.2kW,330x240x300mm,2024-01-25,2024-04-25,2025-11-10,800,2022
+6,3D Printer #2,Additive Manufacturing,maintenance,Lab C,Prusa,i3 MK3S+,0.8kW,250x210x200mm,2024-02-15,2024-03-15,2024-12-31,600,2020
+7,Laser Cutter #1,Laser Cutting,active,Lab D,Epilog,Fusion Pro 32,2.5kW,813x457mm,2024-01-30,2024-04-30,2026-09-15,1500,2021
+8,Laser Cutter #2,Laser Cutting,active,Lab D,Trotec,Speedy 400,3.0kW,1016x610mm,2024-02-20,2024-05-20,2027-01-20,2000,2022
+9,Plasma Cutter #1,Plasma Cutting,active,Lab E,Hypertherm,PowerMax 45,4.5kW,12mm steel,2024-01-10,2024-04-10,2025-05-30,1200,2020
+10,Plasma Cutter #2,Plasma Cutting,active,Lab E,Hypertherm,PowerMax 65,6.5kW,16mm steel,2024-02-25,2024-05-25,2026-07-10,1800,2021
+11,Welding Station #1,Welding,active,Lab F,Lincoln Electric,Power MIG 210 MP,5.0kW,210A output,2024-01-18,2024-04-18,2025-10-05,900,2020
+12,Welding Station #2,Welding,active,Lab F,Miller,Multimatic 220 AC/DC,4.8kW,220A output,2024-02-12,2024-05-12,2026-04-18,1100,2021
+13,Lathe Machine #1,Lathe,active,Lab G,Emco,MaxxTurn 65,7.5kW,650mm length,2024-01-22,2024-04-22,2025-12-15,2000,2020
+14,Lathe Machine #2,Lathe,active,Lab G,Emco,MaxxTurn 85,10kW,850mm length,2024-02-08,2024-05-08,2026-08-22,2500,2021
+15,Milling Machine #1,Milling,active,Lab H,Bridgeport,Series 1,5.5kW,1050x230mm,2024-01-28,2024-04-28,2025-06-30,1800,2020
+16,Milling Machine #2,Milling,active,Lab H,Bridgeport,Series 2,7.5kW,1370x305mm,2024-02-18,2024-05-18,2026-11-12,2200,2021
+17,Drill Press #1,Drilling,active,Lab I,Delta,DP300,1.5kW,305mm stroke,2024-01-12,2024-04-12,2025-03-25,400,2020
+18,Drill Press #2,Drilling,active,Lab I,Jet,JDP-17MF,2.0kW,432mm stroke,2024-02-22,2024-05-22,2026-09-08,500,2021
+19,Band Saw #1,Cutting,active,Lab J,Delta,28-400,1.8kW,305mm capacity,2024-01-16,2024-04-16,2025-07-18,600,2020
+20,Band Saw #2,Cutting,active,Lab J,Jet,BS-9M,2.2kW,230mm capacity,2024-02-14,2024-05-14,2026-12-03,700,2021
+21,Grinder #1,Grinding,active,Lab K,Baldor,812RE,1.1kW,200mm wheel,2024-01-24,2024-04-24,2025-09-14,300,2020
+22,Grinder #2,Grinding,active,Lab K,Baldor,812RE,1.1kW,200mm wheel,2024-02-06,2024-05-06,2026-02-28,300,2021
+23,Compressor #1,Air System,active,Lab L,Ingersoll Rand,SS5L5,7.5kW,5HP,2024-01-08,2024-04-08,2025-04-12,800,2020
+24,Compressor #2,Air System,active,Lab L,Ingersoll Rand,SS5L5,7.5kW,5HP,2024-02-26,2024-05-26,2026-10-06,800,2021
+25,Vacuum System #1,Vacuum,active,Lab M,Festool,CT 26 E,1.4kW,26L capacity,2024-01-14,2024-04-14,2025-08-30,500,2020

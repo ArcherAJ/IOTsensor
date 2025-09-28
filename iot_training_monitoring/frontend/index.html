@@ -37,30 +37,35 @@
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/chart.js" as="script">
 </head>
 <body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress">
+        <div class="scroll-progress-bar" id="scrollProgressBar"></div>
+    </div>
+
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-container">
             <div class="logo-section">
                 <i class="fas fa-microchip logo-icon"></i>
                 <h1 class="logo">IoT Lab Monitor</h1>
             </div>
             <ul class="nav-menu">
-                <li><a href="javascript:void(0)" class="nav-link active" data-section="home" onclick="showSection('home')">
+                <li><a href="#home" class="nav-link active" data-section="home">
                     <i class="fas fa-home"></i> Home
                 </a></li>
-                <li><a href="javascript:void(0)" class="nav-link" data-section="dashboard" onclick="showSection('dashboard')">
+                <li><a href="#dashboard" class="nav-link" data-section="dashboard">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a></li>
-                <li><a href="javascript:void(0)" class="nav-link" data-section="virtual-lab" onclick="showSection('virtual-lab')">
+                <li><a href="#virtual-lab" class="nav-link" data-section="virtual-lab">
                     <i class="fas fa-cube"></i> Virtual Lab
                 </a></li>
-                <li><a href="javascript:void(0)" class="nav-link" data-section="ai-insights" onclick="showSection('ai-insights')">
+                <li><a href="#ai-insights" class="nav-link" data-section="ai-insights">
                     <i class="fas fa-brain"></i> AI Insights
                 </a></li>
-                <li><a href="javascript:void(0)" class="nav-link" data-section="gamification" onclick="showSection('gamification')">
+                <li><a href="#gamification" class="nav-link" data-section="gamification">
                     <i class="fas fa-trophy"></i> Gamification
                 </a></li>
-                <li><a href="javascript:void(0)" class="nav-link" data-section="technology" onclick="showSection('technology')">
+                <li><a href="#technology" class="nav-link" data-section="technology">
                     <i class="fas fa-cogs"></i> Technology
                 </a></li>
             </ul>
@@ -83,7 +88,7 @@
     <!-- Main Content -->
     <main class="main-content">
         <!-- Hero Section -->
-        <section id="home" class="hero-section active">
+        <section id="home" class="hero-section section">
             <div class="hero-background">
                 <div class="floating-elements">
                     <div class="floating-icon" style="--delay: 0s;"><i class="fas fa-microchip"></i></div>
@@ -104,14 +109,14 @@
                         with cutting-edge technology.
                     </p>
                     <div class="hero-actions">
-                        <button class="cta-button primary" onclick="showSection('dashboard')">
+                        <a href="#dashboard" class="cta-button primary">
                             <i class="fas fa-rocket"></i>
                             Explore Dashboard
-                        </button>
-                        <button class="cta-button secondary" onclick="showSection('virtual-lab')">
+                        </a>
+                        <a href="#virtual-lab" class="cta-button secondary">
                             <i class="fas fa-cube"></i>
                             Enter Virtual Lab
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -165,7 +170,7 @@
         </section>
 
         <!-- Real-time Dashboard Section -->
-        <section id="dashboard" class="dashboard-section">
+        <section id="dashboard" class="dashboard-section section">
             <div class="section-header">
                 <h2>Real-Time Equipment Dashboard</h2>
                 <p>Monitor equipment status, performance metrics, and alerts in real-time</p>
@@ -251,58 +256,104 @@
                             <canvas id="energyChart"></canvas>
                         </div>
                     </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Equipment Status Distribution</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-type="status">Status</button>
+                                <button class="chart-btn" data-type="type">Type</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Maintenance Schedule</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-period="upcoming">Upcoming</button>
+                                <button class="chart-btn" data-period="overdue">Overdue</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="maintenanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Temperature Trends</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-equipment="all">All</button>
+                                <button class="chart-btn" data-equipment="cnc">CNC</button>
+                                <button class="chart-btn" data-equipment="robots">Robots</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="temperatureChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Efficiency vs Usage</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-metric="efficiency">Efficiency</button>
+                                <button class="chart-btn" data-metric="usage">Usage Hours</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="efficiencyChart"></canvas>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Equipment Status Grid -->
-                <div class="equipment-grid">
-                    <div class="equipment-card">
-                        <div class="equipment-header">
-                            <h4>CNC Machine #1</h4>
-                            <span class="status-badge active">Active</span>
+                <div class="equipment-grid" id="equipmentGrid">
+                    <!-- Equipment cards will be dynamically loaded here -->
+                </div>
+
+                <!-- Interactive Equipment Details Modal -->
+                <div class="equipment-modal" id="equipmentModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="modalTitle">Equipment Details</h3>
+                            <button class="modal-close" id="modalClose">&times;</button>
                         </div>
-                        <div class="equipment-metrics">
-                            <div class="metric">
-                                <span class="label">Temperature:</span>
-                                <span class="value">45°C</span>
+                        <div class="modal-body">
+                            <div class="equipment-details-grid">
+                                <div class="detail-section">
+                                    <h4>Current Status</h4>
+                                    <div class="status-metrics" id="statusMetrics">
+                                        <!-- Dynamic status metrics -->
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Performance History</h4>
+                                    <div class="chart-container">
+                                        <canvas id="equipmentDetailChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Maintenance History</h4>
+                                    <div class="maintenance-timeline" id="maintenanceTimeline">
+                                        <!-- Dynamic maintenance timeline -->
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Quick Actions</h4>
+                                    <div class="quick-actions">
+                                        <button class="action-btn primary" id="startMaintenance">
+                                            <i class="fas fa-tools"></i> Schedule Maintenance
+                                        </button>
+                                        <button class="action-btn secondary" id="viewManual">
+                                            <i class="fas fa-book"></i> View Manual
+                                        </button>
+                                        <button class="action-btn secondary" id="generateReport">
+                                            <i class="fas fa-file-alt"></i> Generate Report
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="metric">
-                                <span class="label">Efficiency:</span>
-                                <span class="value">92%</span>
-                            </div>
-                            <div class="metric">
-                                <span class="label">Usage:</span>
-                                <span class="value">6.5h</span>
-                            </div>
-                        </div>
-                        <div class="equipment-actions">
-                            <button class="action-btn"><i class="fas fa-eye"></i></button>
-                            <button class="action-btn"><i class="fas fa-cog"></i></button>
-                            <button class="action-btn"><i class="fas fa-chart-bar"></i></button>
-                        </div>
-                    </div>
-                    <div class="equipment-card">
-                        <div class="equipment-header">
-                            <h4>Robot Arm #1</h4>
-                            <span class="status-badge active">Active</span>
-                        </div>
-                        <div class="equipment-metrics">
-                            <div class="metric">
-                                <span class="label">Position:</span>
-                                <span class="value">X: 10, Y: 5</span>
-                            </div>
-                            <div class="metric">
-                                <span class="label">Torque:</span>
-                                <span class="value">85%</span>
-                            </div>
-                            <div class="metric">
-                                <span class="label">Status:</span>
-                                <span class="value">Running</span>
-                            </div>
-                        </div>
-                        <div class="equipment-actions">
-                            <button class="action-btn"><i class="fas fa-eye"></i></button>
-                            <button class="action-btn"><i class="fas fa-cog"></i></button>
-                            <button class="action-btn"><i class="fas fa-chart-bar"></i></button>
                         </div>
                     </div>
                 </div>
@@ -310,7 +361,7 @@
         </section>
 
         <!-- Virtual Lab Section -->
-        <section id="virtual-lab" class="virtual-lab-section">
+        <section id="virtual-lab" class="virtual-lab-section section">
             <div class="section-header">
                 <h2>3D Virtual Training Lab</h2>
                 <p>Immersive 3D environment for hands-on equipment training and exploration</p>
@@ -370,21 +421,74 @@
                             <div class="spinner"></div>
                             <p>Loading 3D Environment...</p>
                         </div>
+                        <div class="lab-hud">
+                            <div class="hud-panel">
+                                <h4>Lab Status</h4>
+                                <div class="hud-metrics">
+                                    <div class="hud-metric">
+                                        <span class="label">Active Equipment:</span>
+                                        <span class="value" id="hudActiveCount">0</span>
+                                    </div>
+                                    <div class="hud-metric">
+                                        <span class="label">Temperature:</span>
+                                        <span class="value" id="hudTemperature">22°C</span>
+                                    </div>
+                                    <div class="hud-metric">
+                                        <span class="label">Safety Status:</span>
+                                        <span class="value safe" id="hudSafety">All Clear</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="lab-overlay">
                         <div class="equipment-info-panel">
                             <h4>Equipment Information</h4>
-                            <div class="info-content">
+                            <div class="info-content" id="equipmentInfo">
                                 <p>Click on equipment to view details</p>
                             </div>
                         </div>
                         <div class="interaction-panel">
                             <h4>Interactive Controls</h4>
                             <div class="control-buttons">
-                                <button class="control-btn"><i class="fas fa-play"></i> Start</button>
-                                <button class="control-btn"><i class="fas fa-pause"></i> Pause</button>
-                                <button class="control-btn"><i class="fas fa-stop"></i> Stop</button>
-                                <button class="control-btn"><i class="fas fa-redo"></i> Reset</button>
+                                <button class="control-btn" id="startSimulation">
+                                    <i class="fas fa-play"></i> Start
+                                </button>
+                                <button class="control-btn" id="pauseSimulation">
+                                    <i class="fas fa-pause"></i> Pause
+                                </button>
+                                <button class="control-btn" id="stopSimulation">
+                                    <i class="fas fa-stop"></i> Stop
+                                </button>
+                                <button class="control-btn" id="resetSimulation">
+                                    <i class="fas fa-redo"></i> Reset
+                                </button>
+                            </div>
+                            <div class="simulation-controls">
+                                <h5>Simulation Speed</h5>
+                                <input type="range" id="simulationSpeed" min="0.1" max="3" step="0.1" value="1">
+                                <span id="speedValue">1x</span>
+                            </div>
+                        </div>
+                        <div class="training-panel">
+                            <h4>Training Mode</h4>
+                            <div class="training-options">
+                                <button class="training-btn" data-mode="troubleshooting">
+                                    <i class="fas fa-wrench"></i> Troubleshooting
+                                </button>
+                                <button class="training-btn" data-mode="maintenance">
+                                    <i class="fas fa-tools"></i> Maintenance
+                                </button>
+                                <button class="training-btn" data-mode="safety">
+                                    <i class="fas fa-shield-alt"></i> Safety
+                                </button>
+                            </div>
+                            <div class="training-progress">
+                                <h5>Progress</h5>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="trainingProgress" style="width: 0%"></div>
+                                </div>
+                                <span id="progressText">0% Complete</span>
                             </div>
                         </div>
                     </div>
@@ -393,7 +497,7 @@
         </section>
 
         <!-- AI Insights Section -->
-        <section id="ai-insights" class="ai-insights-section">
+        <section id="ai-insights" class="ai-insights-section section">
             <div class="section-header">
                 <h2>AI-Powered Insights</h2>
                 <p>Intelligent analytics and predictive recommendations powered by machine learning</p>
@@ -468,11 +572,55 @@
                         <canvas id="predictiveChart"></canvas>
                     </div>
                 </div>
+                <div class="viz-card">
+                    <h3>Anomaly Detection Heatmap</h3>
+                    <div class="viz-container">
+                        <canvas id="anomalyChart"></canvas>
+                    </div>
+                </div>
+                <div class="viz-card">
+                    <h3>Equipment Health Score</h3>
+                    <div class="viz-container">
+                        <canvas id="healthScoreChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Chat Interface -->
+            <div class="ai-chat-interface">
+                <div class="chat-header">
+                    <h3>AI Assistant</h3>
+                    <div class="chat-status">
+                        <span class="status-indicator online"></span>
+                        <span>Online</span>
+                    </div>
+                </div>
+                <div class="chat-messages" id="aiChatMessages">
+                    <div class="message ai-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <p>Hello! I'm your AI assistant. I can help you analyze equipment data, predict maintenance needs, and provide insights. What would you like to know?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="aiChatInput" placeholder="Ask me about equipment performance, maintenance, or insights...">
+                    <button id="aiChatSend">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="chat-suggestions">
+                    <button class="suggestion-btn" data-query="Show me equipment with high temperature">High Temperature Equipment</button>
+                    <button class="suggestion-btn" data-query="Predict maintenance needs">Maintenance Prediction</button>
+                    <button class="suggestion-btn" data-query="Energy consumption analysis">Energy Analysis</button>
+                </div>
             </div>
         </section>
 
         <!-- Gamification Section -->
-        <section id="gamification" class="gamification-section">
+        <section id="gamification" class="gamification-section section">
             <div class="section-header">
                 <h2>Gamification & Achievements</h2>
                 <p>Engage users with rewards, badges, and friendly competition</p>
@@ -565,38 +713,92 @@
                 
                 <div class="challenges-card">
                     <h3>Current Challenges</h3>
-                    <div class="challenges-list">
-                        <div class="challenge-item">
-                            <div class="challenge-icon">
-                                <i class="fas fa-target"></i>
-                            </div>
-                            <div class="challenge-content">
-                                <h4>Training Excellence</h4>
-                                <p>Complete 20 training sessions this month</p>
-                                <div class="challenge-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 60%"></div>
+                    <div class="challenges-list" id="challengesList">
+                        <!-- Dynamic challenges will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Interactive Training Simulator -->
+                <div class="training-simulator">
+                    <h3>Interactive Training Simulator</h3>
+                    <div class="simulator-controls">
+                        <div class="scenario-selector">
+                            <h4>Select Training Scenario</h4>
+                            <div class="scenario-cards">
+                                <div class="scenario-card" data-scenario="cnc-operation">
+                                    <div class="scenario-icon">
+                                        <i class="fas fa-cogs"></i>
                                     </div>
-                                    <span>12/20 sessions</span>
+                                    <h5>CNC Operation</h5>
+                                    <p>Learn CNC machine operation and programming</p>
+                                    <div class="scenario-difficulty">
+                                        <span class="difficulty-label">Difficulty:</span>
+                                        <div class="difficulty-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="scenario-card" data-scenario="robot-programming">
+                                    <div class="scenario-icon">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <h5>Robot Programming</h5>
+                                    <p>Master industrial robot programming</p>
+                                    <div class="scenario-difficulty">
+                                        <span class="difficulty-label">Difficulty:</span>
+                                        <div class="difficulty-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="scenario-card" data-scenario="safety-protocols">
+                                    <div class="scenario-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <h5>Safety Protocols</h5>
+                                    <p>Learn workplace safety procedures</p>
+                                    <div class="scenario-difficulty">
+                                        <span class="difficulty-label">Difficulty:</span>
+                                        <div class="difficulty-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="challenge-reward">200 pts</div>
                         </div>
-                        <div class="challenge-item">
-                            <div class="challenge-icon">
-                                <i class="fas fa-shield-alt"></i>
-                            </div>
-                            <div class="challenge-content">
-                                <h4>Safety Advocate</h4>
-                                <p>Report 5 safety improvements</p>
-                                <div class="challenge-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 40%"></div>
-                                    </div>
-                                    <span>2/5 reports</span>
+                        <div class="simulator-viewport">
+                            <div class="simulator-screen" id="simulatorScreen">
+                                <div class="simulator-placeholder">
+                                    <i class="fas fa-play-circle"></i>
+                                    <p>Select a training scenario to begin</p>
                                 </div>
                             </div>
-                            <div class="challenge-reward">150 pts</div>
+                            <div class="simulator-hud">
+                                <div class="hud-item">
+                                    <span class="hud-label">Score:</span>
+                                    <span class="hud-value" id="trainingScore">0</span>
+                                </div>
+                                <div class="hud-item">
+                                    <span class="hud-label">Time:</span>
+                                    <span class="hud-value" id="trainingTime">00:00</span>
+                                </div>
+                                <div class="hud-item">
+                                    <span class="hud-label">Level:</span>
+                                    <span class="hud-value" id="trainingLevel">1</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -604,7 +806,7 @@
         </section>
 
         <!-- Technology Section -->
-        <section id="technology" class="technology-section">
+        <section id="technology" class="technology-section section">
             <div class="section-header">
                 <h2>Technology Stack</h2>
                 <p>Cutting-edge technologies powering the next generation of lab management</p>

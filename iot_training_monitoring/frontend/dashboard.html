@@ -14,6 +14,7 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="dashboard.html" class="active">Dashboard</a></li>
                 <li><a href="equipment.html">Equipment</a></li>
+                <li><a href="equipment-monitoring.html">Real-time Monitoring</a></li>
                 <li><a href="maintenance.html">Maintenance</a></li>
                 <li><a href="analytics.html">Analytics</a></li>
             </ul>
@@ -27,6 +28,53 @@
                 <div class="connection-status" id="connectionStatus">
                     <span class="status-indicator inactive"></span>
                     Connecting...
+                </div>
+            </div>
+            
+            <!-- KPI Cards Section -->
+            <div class="kpi-cards" id="kpiCards">
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <i class="icon-gear">⚙️</i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 id="totalEquipment">0</h3>
+                        <p>Total Equipment</p>
+                        <div class="kpi-trend positive">+5%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <i class="icon-play">▶️</i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 id="activeEquipment">0</h3>
+                        <p>Active Equipment</p>
+                        <div class="kpi-trend positive">+12%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <i class="icon-alert">⚠️</i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 id="maintenanceAlerts">0</h3>
+                        <p>Maintenance Alerts</p>
+                        <div class="kpi-trend negative">-8%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <i class="icon-chart">📊</i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 id="systemUptime">0%</h3>
+                        <p>System Uptime</p>
+                        <div class="kpi-trend positive">+2%</div>
+                    </div>
                 </div>
             </div>
             
@@ -60,6 +108,49 @@
                 </div>
             </div>
             
+            <!-- Chart Sections -->
+            <div class="chart-sections">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Equipment Performance</h3>
+                        <div class="chart-tabs">
+                            <button class="tab-button active" data-period="24h">24H</button>
+                            <button class="tab-button" data-period="7d">7D</button>
+                            <button class="tab-button" data-period="30d">30D</button>
+                        </div>
+                    </div>
+                    <div class="chart-content" id="equipmentPerformanceChart">
+                        <p>Loading performance data...</p>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Energy Consumption</h3>
+                        <div class="chart-tabs">
+                            <button class="tab-button active" data-period="24h">24H</button>
+                            <button class="tab-button" data-period="7d">7D</button>
+                        </div>
+                    </div>
+                    <div class="chart-content" id="energyConsumptionChart">
+                        <p>Loading energy data...</p>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Equipment Status Distribution</h3>
+                        <div class="chart-tabs">
+                            <button class="tab-button active" data-type="status">Status</button>
+                            <button class="tab-button" data-type="type">Type</button>
+                        </div>
+                    </div>
+                    <div class="chart-content" id="statusDistributionChart">
+                        <p>Loading distribution data...</p>
+                    </div>
+                </div>
+            </div>
+            
             <div class="metric-card" style="grid-column: 1 / -1; margin-top: 2rem;">
                 <h3>Recent Equipment Activity</h3>
                 <div id="recentActivity">
@@ -68,6 +159,11 @@
             </div>
         </div>
     </main>
+
+    <!-- Floating Action Button -->
+    <div class="floating-action-button" id="chatButton">
+        <i class="icon-chat">💬</i>
+    </div>
 
     <footer class="footer">
         <p>&copy; 2024 IoT Training Equipment Monitoring System. All rights reserved.</p>

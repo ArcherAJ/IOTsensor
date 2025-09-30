@@ -37,7 +37,12 @@ class DataProcessor:
         safety_incidents = usage_df['safety_incidents'].sum() if not usage_df.empty else 0
         
         # Calculate average efficiency
-        efficiency_average = sensor_df['efficiency'].mean() if not sensor_df.empty and 'efficiency' in sensor_df.columns else 0
+        efficiency_average = 0
+        if not sensor_df.empty and 'efficiency' in sensor_df.columns:
+            try:
+                efficiency_average = float(sensor_df['efficiency'].mean())
+            except (ValueError, TypeError):
+                efficiency_average = 0
         
         return {
             "total_equipment": int(total_equipment),

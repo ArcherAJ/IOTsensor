@@ -11,6 +11,7 @@ from typing import List, Dict, Any
 from functools import lru_cache
 import time
 from models import *
+from models import SensorData, MaintenanceLog, Equipment, User, UserRole, GamificationStats, CommunityFeedback
 from database import db
 from data_processor import DataProcessor
 from ml_predictor import MLPredictor
@@ -274,6 +275,244 @@ async def get_alerts():
 async def get_equipment():
     equipment_df = db.get_equipment()
     return equipment_df.to_dict(orient='records')
+
+@app.get("/api/equipment/real-time-status")
+async def get_real_time_equipment_status():
+    """Get real-time equipment status with health metrics"""
+    equipment_df = db.get_equipment()
+    sensor_df = db.get_sensor_data()
+    
+    real_time_status = []
+    
+    for _, equipment in equipment_df.iterrows():
+        # Get latest sensor data for this equipment
+        equipment_sensors = sensor_df[sensor_df['equipment_id'] == equipment['id']]
+        
+        if not equipment_sensors.empty:
+            latest_sensor = equipment_sensors.iloc[-1]
+            
+            # Calculate health score based on sensor readings
+            health_score = calculate_equipment_health(latest_sensor)
+            
+            # Determine status based on health score and thresholds
+            status = determine_equipment_status(health_score, latest_sensor)
+            
+            # Check for safety violations
+            safety_violations = check_safety_violations(latest_sensor, equipment)
+            
+            real_time_status.append({
+                "id": equipment['id'],
+                "name": equipment['name'],
+                "type": equipment['type'],
+                "location": equipment['location'],
+                "status": status,
+                "health_score": health_score,
+                "last_updated": latest_sensor['timestamp'],
+                "sensor_readings": {
+                    "temperature": latest_sensor.get('temperature', 0),
+                    "vibration": latest_sensor.get('vibration', 0),
+                    "pressure": latest_sensor.get('pressure', 0),
+                    "efficiency": latest_sensor.get('efficiency', 0),
+                    "power_consumption": latest_sensor.get('power_consumption', 0)
+                },
+                "safety_violations": safety_violations,
+                "alerts": generate_equipment_alerts(health_score, latest_sensor, equipment)
+            })
+        else:
+            # No sensor data available
+            real_time_status.append({
+                "id": equipment['id'],
+                "name": equipment['name'],
+                "type": equipment['type'],
+                "location": equipment['location'],
+                "status": "offline",
+                "health_score": 0,
+                "last_updated": None,
+                "sensor_readings": None,
+                "safety_violations": [],
+                "alerts": [{"type": "warning", "message": "No sensor data available"}]
+            })
+    
+    return real_time_status
+
+def calculate_equipment_health(sensor_data):
+    """Calculate equipment health score based on sensor readings"""
+    health_score = 100
+    
+    # Temperature impact (optimal range: 20-40°C)
+    temp = sensor_data.get('temperature', 25)
+    if temp < 20 or temp > 40:
+        health_score -= min(30, abs(temp - 30) * 2)
+    
+    # Vibration impact (optimal: < 5)
+    vibration = sensor_data.get('vibration', 0)
+    if vibration > 5:
+        health_score -= min(25, vibration * 3)
+    
+    # Pressure impact (optimal: 80-120)
+    pressure = sensor_data.get('pressure', 100)
+    if pressure < 80 or pressure > 120:
+        health_score -= min(20, abs(pressure - 100) * 0.5)
+    
+    # Efficiency impact
+    efficiency = sensor_data.get('efficiency', 100)
+    if efficiency < 80:
+        health_score -= (80 - efficiency) * 0.5
+    
+    return max(0, min(100, health_score))
+
+def determine_equipment_status(health_score, sensor_data):
+    """Determine equipment status based on health score and sensor data"""
+    if health_score >= 90:
+        return "optimal"
+    elif health_score >= 70:
+        return "good"
+    elif health_score >= 50:
+        return "warning"
+    elif health_score >= 30:
+        return "critical"
+    else:
+        return "failure"
+
+def check_safety_violations(sensor_data, equipment):
+    """Check for safety violations based on sensor data"""
+    violations = []
+    
+    # Temperature safety check
+    temp = sensor_data.get('temperature', 25)
+    if temp > 60:  # Dangerous temperature
+        violations.append({
+            "type": "temperature",
+            "severity": "critical",
+            "message": f"Equipment temperature ({temp}°C) exceeds safety limit (60°C)"
+        })
+    
+    # Vibration safety check
+    vibration = sensor_data.get('vibration', 0)
+    if vibration > 10:  # Dangerous vibration
+        violations.append({
+            "type": "vibration",
+            "severity": "critical",
+            "message": f"Excessive vibration detected ({vibration}) - potential mechanical failure"
+        })
+    
+    # Power consumption safety check
+    power = sensor_data.get('power_consumption', 0)
+    if power > equipment.get('max_power_rating', 1000) * 1.2:  # 20% over rating
+        violations.append({
+            "type": "power",
+            "severity": "warning",
+            "message": f"Power consumption ({power}W) exceeds safe operating limits"
+        })
+    
+    return violations
+
+def generate_equipment_alerts(health_score, sensor_data, equipment):
+    """Generate alerts based on equipment health and sensor data"""
+    alerts = []
+    
+    if health_score < 50:
+        alerts.append({
+            "type": "health",
+            "severity": "critical" if health_score < 30 else "warning",
+            "message": f"Equipment health score is {health_score:.1f}% - immediate attention required"
+        })
+    
+    # Efficiency alert
+    efficiency = sensor_data.get('efficiency', 100)
+    if efficiency < 70:
+        alerts.append({
+            "type": "efficiency",
+            "severity": "warning",
+            "message": f"Equipment efficiency is {efficiency}% - performance degradation detected"
+        })
+    
+    # Maintenance due alert
+    last_maintenance = equipment.get('last_maintenance')
+    if last_maintenance:
+        days_since_maintenance = (datetime.now() - datetime.fromisoformat(last_maintenance)).days
+        if days_since_maintenance > 90:  # 3 months
+            alerts.append({
+                "type": "maintenance",
+                "severity": "warning",
+                "message": f"Equipment maintenance overdue by {days_since_maintenance - 90} days"
+            })
+    
+    return alerts
+
+@app.websocket("/ws/equipment-monitoring")
+async def equipment_monitoring_websocket(websocket: WebSocket):
+    """WebSocket endpoint specifically for real-time equipment monitoring"""
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Send equipment monitoring updates every 2 seconds
+            await asyncio.sleep(2)
+            
+            # Get real-time equipment status
+            real_time_status = await get_real_time_equipment_status()
+            
+            # Calculate summary statistics
+            total_equipment = len(real_time_status)
+            optimal_count = sum(1 for eq in real_time_status if eq['status'] == 'optimal')
+            warning_count = sum(1 for eq in real_time_status if eq['status'] == 'warning')
+            critical_count = sum(1 for eq in real_time_status if eq['status'] == 'critical')
+            failure_count = sum(1 for eq in real_time_status if eq['status'] == 'failure')
+            offline_count = sum(1 for eq in real_time_status if eq['status'] == 'offline')
+            
+            # Collect all alerts and safety violations
+            all_alerts = []
+            all_safety_violations = []
+            for equipment in real_time_status:
+                for alert in equipment.get('alerts', []):
+                    all_alerts.append({
+                        "equipment_id": equipment['id'],
+                        "equipment_name": equipment['name'],
+                        "equipment_location": equipment['location'],
+                        "alert": alert,
+                        "timestamp": equipment.get('last_updated')
+                    })
+                
+                for violation in equipment.get('safety_violations', []):
+                    all_safety_violations.append({
+                        "equipment_id": equipment['id'],
+                        "equipment_name": equipment['name'],
+                        "equipment_location": equipment['location'],
+                        "violation": violation,
+                        "timestamp": equipment.get('last_updated')
+                    })
+            
+            # Sort alerts by severity (critical first)
+            severity_order = {'critical': 0, 'warning': 1, 'info': 2}
+            all_alerts.sort(key=lambda x: severity_order.get(x['alert'].get('severity', 'info'), 2))
+            all_safety_violations.sort(key=lambda x: severity_order.get(x['violation'].get('severity', 'info'), 2))
+            
+            monitoring_data = {
+                "type": "equipment_monitoring_update",
+                "timestamp": datetime.now().isoformat(),
+                "summary": {
+                    "total_equipment": total_equipment,
+                    "optimal": optimal_count,
+                    "warning": warning_count,
+                    "critical": critical_count,
+                    "failure": failure_count,
+                    "offline": offline_count,
+                    "health_percentage": round((optimal_count / total_equipment * 100) if total_equipment > 0 else 0, 1)
+                },
+                "equipment_status": real_time_status,
+                "alerts": all_alerts,
+                "safety_violations": all_safety_violations,
+                "critical_count": len([a for a in all_alerts if a['alert'].get('severity') == 'critical']),
+                "safety_violation_count": len(all_safety_violations)
+            }
+            
+            await manager.send_personal_message(json.dumps(monitoring_data), websocket)
+            
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception as e:
+        print(f"Equipment monitoring WebSocket error: {e}")
+        manager.disconnect(websocket)
 
 @app.get("/api/equipment/{equipment_id}")
 async def get_equipment_details(equipment_id: int):
@@ -730,6 +969,29 @@ async def websocket_endpoint(websocket: WebSocket):
             equipment_df = db.get_equipment()
             equipment_status = equipment_df.to_dict(orient='records') if not equipment_df.empty else []
             
+            # Get real-time equipment monitoring data
+            real_time_equipment_status = await get_real_time_equipment_status()
+            
+            # Extract critical alerts and safety violations
+            critical_alerts = []
+            safety_violations = []
+            for equipment in real_time_equipment_status:
+                for alert in equipment.get('alerts', []):
+                    if alert.get('severity') == 'critical':
+                        critical_alerts.append({
+                            "equipment_id": equipment['id'],
+                            "equipment_name": equipment['name'],
+                            "alert": alert
+                        })
+                
+                for violation in equipment.get('safety_violations', []):
+                    if violation.get('severity') == 'critical':
+                        safety_violations.append({
+                            "equipment_id": equipment['id'],
+                            "equipment_name": equipment['name'],
+                            "violation": violation
+                        })
+            
             data = {
                 "type": "real_time_update",
                 "timestamp": datetime.now().isoformat(),
@@ -738,6 +1000,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 "recent_activity": recent_activity,
                 "sensor_data": latest_sensor_data,
                 "equipment_status": equipment_status,
+                "real_time_equipment_status": real_time_equipment_status,
+                "critical_alerts": critical_alerts,
+                "safety_violations": safety_violations,
                 "active_connections": len(manager.active_connections)
             }
             

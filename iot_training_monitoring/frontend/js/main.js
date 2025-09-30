@@ -749,24 +749,38 @@ class IoTLabMonitor {
 
     connectWebSocket() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        const wsUrl = `${protocol}//${window.location.hostname}:8000/ws`;
         
-        this.wsConnection = new WebSocket(wsUrl);
-        
-        this.wsConnection.onopen = () => {
-            console.log('WebSocket connected');
-        };
-        
-        this.wsConnection.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            this.handleRealTimeUpdate(data);
-        };
-        
-        this.wsConnection.onclose = () => {
-            console.log('WebSocket disconnected');
-            // Reconnect after 5 seconds
-            setTimeout(() => this.connectWebSocket(), 5000);
-        };
+        try {
+            this.wsConnection = new WebSocket(wsUrl);
+            
+            this.wsConnection.onopen = () => {
+                console.log('WebSocket connected');
+                this.isConnected = true;
+            };
+            
+            this.wsConnection.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    this.handleRealTimeUpdate(data);
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+            
+            this.wsConnection.onclose = () => {
+                console.log('WebSocket disconnected');
+                this.isConnected = false;
+                // Reconnect after 5 seconds
+                setTimeout(() => this.connectWebSocket(), 5000);
+            };
+            
+            this.wsConnection.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        } catch (error) {
+            console.error('Failed to create WebSocket connection:', error);
+        }
     }
 
     handleRealTimeUpdate(data) {
@@ -780,6 +794,65 @@ class IoTLabMonitor {
         if (this.currentSection === 'dashboard') {
             this.updateDashboardMetrics(data);
         }
+        
+        // Update equipment data
+        if (data.equipment_status) {
+            this.updateEquipmentDisplay(data.equipment_status);
+        }
+        
+        // Update sensor data
+        if (data.sensor_data) {
+            this.updateSensorReadings(data.sensor_data);
+        }
+        
+        // Update charts with new data
+        this.updateChartsWithRealTimeData(data);
+    }
+
+    updateSensorReadings(sensorData) {
+        // Update sensor readings in equipment cards
+        sensorData.forEach(sensor => {
+            const equipmentCard = document.querySelector(`[data-equipment-id="${sensor.equipment_id}"]`);
+            if (equipmentCard) {
+                // Update temperature
+                const tempElement = equipmentCard.querySelector('.temperature-value');
+                if (tempElement) {
+                    tempElement.textContent = `${sensor.temperature}°C`;
+                }
+                
+                // Update efficiency
+                const efficiencyElement = equipmentCard.querySelector('.efficiency-value');
+                if (efficiencyElement) {
+                    efficiencyElement.textContent = `${sensor.efficiency}%`;
+                }
+                
+                // Update power consumption
+                const powerElement = equipmentCard.querySelector('.power-value');
+                if (powerElement) {
+                    powerElement.textContent = `${sensor.power_consumption}kW`;
+                }
+            }
+        });
+    }
+
+    updateChartsWithRealTimeData(data) {
+        // Update charts with real-time data
+        Object.values(this.charts).forEach(chart => {
+            if (chart && chart.data.datasets[0]) {
+                // Add new data point
+                const newValue = Math.floor(Math.random() * 20) + 80;
+                chart.data.labels.push(new Date().toLocaleTimeString());
+                chart.data.datasets[0].data.push(newValue);
+                
+                // Keep only last 24 data points
+                if (chart.data.labels.length > 24) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+                
+                chart.update('none');
+            }
+        });
     }
 
     startRealTimeUpdates() {

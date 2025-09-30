@@ -711,18 +711,86 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            # Send real-time updates every 5 seconds
-            await asyncio.sleep(5)
+            # Send real-time updates every 3 seconds
+            await asyncio.sleep(3)
+            
+            # Get real-time data from database
+            overview_stats = data_processor.get_overview_stats()
+            alerts = data_processor.get_alerts()
+            recent_activity = data_processor.get_recent_activity()
+            
+            # Get latest sensor data
+            sensor_df = db.get_sensor_data()
+            latest_sensor_data = []
+            if not sensor_df.empty:
+                latest_readings = sensor_df.groupby('equipment_id').last().reset_index()
+                latest_sensor_data = latest_readings.to_dict(orient='records')
+            
+            # Get equipment status updates
+            equipment_df = db.get_equipment()
+            equipment_status = equipment_df.to_dict(orient='records') if not equipment_df.empty else []
+            
             data = {
                 "type": "real_time_update",
                 "timestamp": datetime.now().isoformat(),
-                "equipment_status": "active",
-                "alerts": 0,
-                "active_users": len(manager.active_connections)
+                "overview_stats": overview_stats,
+                "alerts": [alert.dict() for alert in alerts] if alerts else [],
+                "recent_activity": recent_activity,
+                "sensor_data": latest_sensor_data,
+                "equipment_status": equipment_status,
+                "active_connections": len(manager.active_connections)
             }
+            
             await manager.send_personal_message(json.dumps(data), websocket)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+        manager.disconnect(websocket)
+
+# Background task for continuous data updates
+async def background_data_updater():
+    """Background task to continuously update sensor data"""
+    while True:
+        try:
+            # Simulate new sensor readings
+            sensor_df = db.get_sensor_data()
+            if not sensor_df.empty:
+                # Add new sensor data every 10 seconds
+                from datetime import datetime
+                import random
+                
+                # Get latest equipment IDs
+                equipment_df = db.get_equipment()
+                if not equipment_df.empty:
+                    for _, equipment in equipment_df.iterrows():
+                        new_sensor_data = SensorData(
+                            timestamp=datetime.now().isoformat(),
+                            equipment_id=equipment['id'],
+                            temperature=round(random.uniform(20, 80), 1),
+                            vibration=round(random.uniform(0.1, 0.5), 2),
+                            power_consumption=round(random.uniform(1.0, 10.0), 1),
+                            usage_hours=round(random.uniform(0.1, 2.0), 1),
+                            efficiency=round(random.uniform(70, 100), 1),
+                            humidity=round(random.uniform(30, 70), 1),
+                            pressure=round(random.uniform(1.0, 1.5), 2),
+                            rpm=round(random.uniform(1000, 5000), 0),
+                            oil_level=round(random.uniform(20, 100), 1),
+                            noise_level=round(random.uniform(40, 80), 1),
+                            voltage=round(random.uniform(220, 240), 1),
+                            current=round(random.uniform(5, 20), 1)
+                        )
+                        db.add_sensor_data(new_sensor_data)
+            
+            await asyncio.sleep(10)  # Update every 10 seconds
+        except Exception as e:
+            print(f"Background updater error: {e}")
+            await asyncio.sleep(30)  # Wait longer on error
+
+# Start background task when app starts
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(background_data_updater())
 
 # Serve frontend files (must be after API routes)
 @app.get("/")

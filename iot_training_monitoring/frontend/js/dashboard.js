@@ -2,12 +2,17 @@ class Dashboard {
     constructor() {
         this.apiBaseUrl = 'http://localhost:8000';
         this.refreshInterval = 30000; // 30 seconds
+        this.wsConnection = null;
+        this.isConnected = false;
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
         this.init();
     }
 
     async init() {
         try {
             await this.loadDashboardData();
+            this.connectWebSocket();
             this.setupRealTimeUpdates();
             this.setupEventListeners();
             this.showNotification('Dashboard loaded successfully', 'success');
@@ -379,10 +384,149 @@ class Dashboard {
         }
     }
 
+    connectWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.hostname}:8000/ws`;
+        
+        try {
+            this.wsConnection = new WebSocket(wsUrl);
+            
+            this.wsConnection.onopen = () => {
+                console.log('WebSocket connected');
+                this.isConnected = true;
+                this.reconnectAttempts = 0;
+                this.showNotification('Real-time connection established', 'success');
+            };
+            
+            this.wsConnection.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    this.handleRealTimeUpdate(data);
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+            
+            this.wsConnection.onclose = () => {
+                console.log('WebSocket disconnected');
+                this.isConnected = false;
+                this.attemptReconnect();
+            };
+            
+            this.wsConnection.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                this.showNotification('Connection error - attempting to reconnect', 'warning');
+            };
+        } catch (error) {
+            console.error('Failed to create WebSocket connection:', error);
+            this.showNotification('Failed to establish real-time connection', 'error');
+        }
+    }
+
+    attemptReconnect() {
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+            this.reconnectAttempts++;
+            const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+            
+            console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`);
+            
+            setTimeout(() => {
+                this.connectWebSocket();
+            }, delay);
+        } else {
+            console.log('Max reconnection attempts reached');
+            this.showNotification('Real-time connection lost - please refresh the page', 'error');
+        }
+    }
+
+    handleRealTimeUpdate(data) {
+        if (data.type === 'real_time_update') {
+            // Update overview stats
+            if (data.overview_stats) {
+                this.updateStatusChart(data.overview_stats);
+            }
+            
+            // Update alerts
+            if (data.alerts) {
+                this.updateAlertsList(data.alerts);
+            }
+            
+            // Update recent activity
+            if (data.recent_activity) {
+                this.updateRecentActivity(data.recent_activity);
+            }
+            
+            // Update equipment status
+            if (data.equipment_status) {
+                this.updateEquipmentStatus(data.equipment_status);
+            }
+            
+            // Update sensor data
+            if (data.sensor_data) {
+                this.updateSensorData(data.sensor_data);
+            }
+            
+            // Update connection status
+            this.updateConnectionStatus(data.active_connections);
+        }
+    }
+
+    updateConnectionStatus(activeConnections) {
+        const statusIndicator = document.getElementById('connectionStatus');
+        if (statusIndicator) {
+            statusIndicator.innerHTML = `
+                <span class="status-indicator active"></span>
+                Real-time (${activeConnections} users)
+            `;
+        }
+    }
+
+    updateEquipmentStatus(equipmentStatus) {
+        // Update equipment cards with real-time status
+        equipmentStatus.forEach(equipment => {
+            const equipmentCard = document.querySelector(`[data-equipment-id="${equipment.id}"]`);
+            if (equipmentCard) {
+                const statusBadge = equipmentCard.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.className = `status-badge ${equipment.status.toLowerCase()}`;
+                    statusBadge.textContent = equipment.status;
+                }
+            }
+        });
+    }
+
+    updateSensorData(sensorData) {
+        // Update sensor readings in real-time
+        sensorData.forEach(sensor => {
+            const equipmentCard = document.querySelector(`[data-equipment-id="${sensor.equipment_id}"]`);
+            if (equipmentCard) {
+                // Update temperature if displayed
+                const tempElement = equipmentCard.querySelector('.temperature-value');
+                if (tempElement) {
+                    tempElement.textContent = `${sensor.temperature}°C`;
+                }
+                
+                // Update efficiency if displayed
+                const efficiencyElement = equipmentCard.querySelector('.efficiency-value');
+                if (efficiencyElement) {
+                    efficiencyElement.textContent = `${sensor.efficiency}%`;
+                }
+                
+                // Update power consumption if displayed
+                const powerElement = equipmentCard.querySelector('.power-value');
+                if (powerElement) {
+                    powerElement.textContent = `${sensor.power_consumption}kW`;
+                }
+            }
+        });
+    }
+
     setupRealTimeUpdates() {
-        // Update dashboard data every 30 seconds
+        // Fallback: Update dashboard data every 30 seconds if WebSocket fails
         setInterval(() => {
-            this.loadDashboardData();
+            if (!this.isConnected) {
+                this.loadDashboardData();
+            }
         }, this.refreshInterval);
 
         // Add refresh button
